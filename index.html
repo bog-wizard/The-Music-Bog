@@ -1,0 +1,3933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>The Music Bog</title>
+
+    <style>
+
+:root {
+    --void: #020402;
+    --panel: #060a05;
+    --panel-2: #090e07;
+    --acid: #b7ff00;
+    --acid-hot: #d3ff37;
+    --acid-dim: #76a900;
+    --acid-dead: #3c5a00;
+    --muck: #172008;
+    --slime: #748f00;
+    --pink: #ff3f82;
+    --white: #e6f3bd;
+    --muted: #71804d;
+    --line: rgba(183, 255, 0, .22);
+    --line-hot: rgba(183, 255, 0, .52);
+    --shadow: rgba(0,0,0,.72);
+}
+
+* { box-sizing: border-box; }
+
+html {
+    background: var(--void);
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--white);
+    background:
+        radial-gradient(circle at 14% 18%, rgba(115,145,0,.11), transparent 28rem),
+        radial-gradient(circle at 82% 32%, rgba(120,255,0,.055), transparent 32rem),
+        linear-gradient(180deg, #010201, #040704 48%, #010201);
+    font-family: "Courier New", Consolas, monospace;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: .16;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.025) 0,
+            rgba(255,255,255,.025) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+    mix-blend-mode: screen;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    background:
+        radial-gradient(circle at center, transparent 48%, rgba(0,0,0,.62) 100%);
+}
+
+::selection {
+    background: var(--acid);
+    color: #0a0e04;
+}
+
+a { color: inherit; }
+
+.page {
+    width: min(97vw, 1500px);
+    margin: 0 auto;
+    padding: 18px 0 28px;
+}
+
+.top-grid {
+    display: grid;
+    grid-template-columns: minmax(430px, 0.92fr) minmax(500px, 1.08fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.left-stack,
+.right-stack {
+    min-width: 0;
+}
+
+.terminal-boot {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgba(183,255,0,.12);
+    color: #82aa13;
+    background: rgba(0,0,0,.48);
+    box-shadow: inset 0 0 25px rgba(71,101,0,.08);
+    font-size: 10px;
+    line-height: 1.7;
+    letter-spacing: .04em;
+}
+
+.terminal-boot strong { color: var(--acid); }
+
+.hero {
+    position: relative;
+    min-height: 245px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+    padding: 34px 28px 28px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background:
+        radial-gradient(circle at 50% 58%, rgba(183,255,0,.08), transparent 17rem),
+        linear-gradient(180deg, rgba(5,10,4,.92), rgba(1,3,1,.97));
+    box-shadow:
+        0 24px 55px var(--shadow),
+        inset 0 0 65px rgba(72,106,0,.08);
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .42;
+    background:
+        repeating-radial-gradient(circle at 50% 60%, transparent 0 28px, rgba(183,255,0,.08) 29px, transparent 31px 54px),
+        linear-gradient(120deg, transparent 0 48%, rgba(183,255,0,.04) 49%, transparent 50%);
+}
+
+.hero::after {
+    content: "▓▒░ SIGNAL FOUND ░▒▓";
+    position: absolute;
+    bottom: 13px;
+    color: rgba(183,255,0,.42);
+    font-size: 9px;
+    letter-spacing: .22em;
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.hero-kicker {
+    margin-bottom: 6px;
+    color: #81a912;
+    font-size: 11px;
+    letter-spacing: .22em;
+}
+
+h1 {
+    margin: 0;
+    color: var(--acid);
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: clamp(58px, 7vw, 104px);
+    line-height: .82;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    text-shadow:
+        3px 3px 0 #263600,
+        -2px 0 0 rgba(183,255,0,.18),
+        0 0 18px rgba(183,255,0,.22);
+    transform: skew(-2deg);
+}
+
+.tagline {
+    margin: 17px 0 0;
+    color: #d6e3ae;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .13em;
+}
+
+.tagline span {
+    color: var(--pink);
+}
+
+.panel {
+    position: relative;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    background:
+        linear-gradient(180deg, rgba(9,14,7,.94), rgba(3,6,3,.97));
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.48),
+        inset 0 0 24px rgba(67,94,0,.055);
+    overflow: hidden;
+}
+
+.panel::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    background:
+        linear-gradient(90deg,
+            transparent,
+            rgba(183,255,0,.18) 10%,
+            rgba(183,255,0,.68) 48%,
+            rgba(183,255,0,.18) 90%,
+            transparent);
+}
+
+.panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 49px;
+    padding: 13px 17px 11px;
+    border-bottom: 1px solid rgba(183,255,0,.14);
+    background: rgba(0,0,0,.28);
+}
+
+.panel-head h2 {
+    margin: 0;
+    color: var(--acid);
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.panel-head .micro {
+    color: var(--pink);
+    font-size: 9px;
+    letter-spacing: .14em;
+}
+
+.panel-body {
+    padding: 18px;
+}
+
+.bog-console .panel-body {
+    padding-bottom: 15px;
+}
+
+.seed-box {
+    margin-bottom: 17px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid rgba(183,255,0,.11);
+}
+
+.seed-box label,
+.filter-header label {
+    color: #d8e7b1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.seed-note {
+    margin-top: 8px;
+    color: #687945;
+    font-size: 9px;
+    line-height: 1.55;
+    text-transform: uppercase;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 9px;
+    padding: 10px 12px;
+    border: 1px solid rgba(183,255,0,.25);
+    border-radius: 0;
+    outline: none;
+    color: var(--acid);
+    background:
+        linear-gradient(180deg, rgba(0,0,0,.86), rgba(3,7,2,.95));
+    box-shadow:
+        inset 0 0 17px rgba(63,99,0,.09),
+        0 0 0 1px rgba(0,0,0,.65);
+    font: inherit;
+    font-size: 12px;
+}
+
+input[type="text"]::placeholder { color: #5c7134; }
+
+input[type="text"]:focus,
+select:focus {
+    border-color: var(--acid);
+    box-shadow:
+        inset 0 0 22px rgba(109,165,0,.12),
+        0 0 13px rgba(183,255,0,.13);
+}
+
+.filter {
+    margin-bottom: 10px;
+    padding: 13px 0 14px;
+    border-bottom: 1px solid rgba(183,255,0,.09);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.filter-header span {
+    min-width: 45px;
+    padding: 5px 8px;
+    border: 1px solid rgba(183,255,0,.22);
+    color: var(--acid);
+    background: rgba(183,255,0,.04);
+    text-align: center;
+    font-size: 11px;
+    box-shadow: inset 0 0 10px rgba(183,255,0,.04);
+}
+
+input[type="range"] {
+    appearance: none;
+    width: 100%;
+    height: 18px;
+    margin: 3px 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 5px;
+    border: 1px solid rgba(183,255,0,.20);
+    background:
+        linear-gradient(90deg, #273b00, #8dc500 62%, #2a180f);
+    box-shadow:
+        0 0 8px rgba(183,255,0,.11),
+        inset 0 1px 2px rgba(0,0,0,.8);
+}
+
+input[type="range"]::-moz-range-track {
+    height: 5px;
+    border: 1px solid rgba(183,255,0,.20);
+    background:
+        linear-gradient(90deg, #273b00, #8dc500 62%, #2a180f);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 5px;
+    height: 21px;
+    margin-top: -9px;
+    border: none;
+    border-radius: 0;
+    background: var(--pink);
+    box-shadow:
+        0 0 8px rgba(255,63,130,.58),
+        0 0 2px #fff;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 5px;
+    height: 21px;
+    border: none;
+    border-radius: 0;
+    background: var(--pink);
+    box-shadow: 0 0 8px rgba(255,63,130,.58);
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1px;
+    color: #6d8442;
+    font-size: 8px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: 1.35fr .8fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+button {
+    appearance: none;
+    min-height: 45px;
+    padding: 11px 14px;
+    border: 1px solid rgba(183,255,0,.40);
+    border-radius: 0;
+    color: #0a0f02;
+    background:
+        linear-gradient(180deg, var(--acid-hot), #94d300);
+    box-shadow:
+        inset 0 1px rgba(255,255,255,.22),
+        0 0 16px rgba(183,255,0,.10);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 120ms ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px rgba(183,255,0,.22);
+}
+
+button:active { transform: translateY(1px); }
+
+.secondary-button,
+#swampWizardButton {
+    color: var(--acid);
+    background: #050804;
+    box-shadow: inset 0 0 18px rgba(183,255,0,.055);
+}
+
+.secondary-button:hover,
+#swampWizardButton:hover {
+    color: #0b1002;
+    background: var(--acid);
+}
+
+.connection-panel .panel-body {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto auto;
+    gap: 11px;
+    align-items: center;
+    padding: 14px 16px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    color: var(--acid);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #485918;
+    box-shadow: 0 0 0 3px rgba(183,255,0,.05);
+}
+
+#playerStatus {
+    grid-column: 1 / -1;
+    margin-top: -2px;
+    color: #60713a;
+    font-size: 9px;
+}
+
+.feed {
+    min-height: 214px;
+}
+
+.feed-screen {
+    position: relative;
+    min-height: 214px;
+    padding: 20px 23px;
+    overflow: hidden;
+    background:
+        linear-gradient(90deg, rgba(0,0,0,.68), rgba(3,12,2,.40)),
+        radial-gradient(circle at 75% 62%, rgba(183,255,0,.10), transparent 16rem),
+        linear-gradient(180deg, #061005, #020502);
+}
+
+.feed-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .10;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 20px, rgba(183,255,0,.15) 21px, transparent 22px),
+        repeating-linear-gradient(0deg, transparent 0 20px, rgba(183,255,0,.11) 21px, transparent 22px);
+}
+
+.feed-copy {
+    position: relative;
+    z-index: 1;
+    color: #8fc800;
+    font-size: 10px;
+    line-height: 1.85;
+}
+
+.feed-copy strong { color: var(--acid); }
+
+.feed-glow {
+    position: absolute;
+    right: 5%;
+    bottom: -20%;
+    width: 44%;
+    aspect-ratio: 1.5;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(183,255,0,.17), rgba(183,255,0,.02) 45%, transparent 70%);
+    filter: blur(8px);
+}
+
+.results-panel {
+    min-height: 520px;
+}
+
+#searchResults {
+    min-height: 455px;
+    padding: 10px 12px 14px;
+}
+
+#searchResults:empty::before {
+    content: "> BOG ACTIVITY WILL APPEAR HERE...\A> TRUST THE PROCESS.\A> THE WATER IS LISTENING.";
+    white-space: pre;
+    display: block;
+    padding: 25px 16px;
+    color: #53652f;
+    font-size: 10px;
+    line-height: 1.9;
+}
+
+#searchResults > p:first-child {
+    margin: 4px 3px 9px;
+    padding: 8px 10px;
+    border: 1px solid rgba(183,255,0,.10);
+    color: #7ca300;
+    background: rgba(183,255,0,.025);
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+.track {
+    position: relative;
+    display: grid;
+    grid-template-columns: 72px minmax(0,1fr);
+    gap: 13px;
+    align-items: center;
+    min-height: 95px;
+    margin-top: 8px;
+    padding: 11px 45px 11px 11px;
+    border: 1px solid rgba(183,255,0,.14);
+    background:
+        linear-gradient(90deg, rgba(183,255,0,.038), transparent 56%),
+        rgba(1,4,1,.70);
+    transition: 120ms ease;
+}
+
+.track:hover {
+    transform: translateX(2px);
+    border-color: rgba(183,255,0,.34);
+    background:
+        linear-gradient(90deg, rgba(183,255,0,.07), transparent 63%),
+        rgba(2,6,2,.82);
+}
+
+.track::before {
+    content: counter(specimen, decimal-leading-zero);
+    counter-increment: specimen;
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    color: #4e6e00;
+    font-size: 9px;
+}
+
+#searchResults { counter-reset: specimen; }
+
+.album-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border: 1px solid rgba(183,255,0,.26);
+    background: #000;
+    box-shadow: 0 0 12px rgba(0,0,0,.55);
+}
+
+.album-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(.72) contrast(1.08) brightness(.88);
+}
+
+.swamp-play-button {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%,-50%);
+    width: 35px;
+    height: 35px;
+    min-height: 0;
+    padding: 0 0 0 2px;
+    border-radius: 50%;
+    color: var(--acid);
+    background: rgba(0,0,0,.82);
+    border: 1px solid rgba(183,255,0,.66);
+    box-shadow: 0 0 12px rgba(183,255,0,.16);
+}
+
+.swamp-play-button:hover {
+    transform: translate(-50%,-50%) scale(1.06);
+}
+
+.swamp-play-button.playing {
+    color: #081000;
+    background: var(--acid);
+}
+
+.track-info {
+    min-width: 0;
+}
+
+.track-name {
+    color: var(--acid);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+.artist {
+    margin-top: 4px;
+    color: #d4e5a1;
+    font-size: 10px;
+}
+
+.album {
+    margin-top: 3px;
+    color: #66783d;
+    font-size: 9px;
+}
+
+.track a {
+    display: inline-block;
+    margin-top: 6px;
+    color: #8fb92d;
+    font-size: 8px;
+    letter-spacing: .05em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.track a:hover { color: var(--acid); }
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr .72fr .78fr;
+    gap: 1px;
+    margin-top: 4px;
+    border: 1px solid rgba(183,255,0,.16);
+    background: rgba(183,255,0,.16);
+}
+
+.bottom-cell {
+    min-height: 82px;
+    padding: 14px 16px;
+    background: #030603;
+    color: #607337;
+    font-size: 8px;
+    line-height: 1.65;
+    text-transform: uppercase;
+}
+
+.bottom-cell strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #85a933;
+    font-size: 9px;
+}
+
+.signal-bars {
+    display: flex;
+    gap: 3px;
+    align-items: end;
+    height: 25px;
+    margin-top: 8px;
+}
+
+.signal-bars i {
+    display: block;
+    width: 8px;
+    background: var(--acid);
+    box-shadow: 0 0 5px rgba(183,255,0,.20);
+}
+
+.signal-bars i:nth-child(1) { height: 8px; opacity:.35; }
+.signal-bars i:nth-child(2) { height: 11px; opacity:.45; }
+.signal-bars i:nth-child(3) { height: 14px; opacity:.55; }
+.signal-bars i:nth-child(4) { height: 17px; opacity:.7; }
+.signal-bars i:nth-child(5) { height: 20px; opacity:.85; }
+.signal-bars i:nth-child(6) { height: 23px; }
+.signal-bars i:nth-child(7) { height: 18px; opacity:.8; }
+.signal-bars i:nth-child(8) { height: 21px; opacity:.9; }
+
+.footer-mantra {
+    color: var(--acid);
+}
+
+.pink { color: var(--pink); }
+
+.slime-line {
+    height: 8px;
+    margin: 0 0 10px;
+    background:
+        radial-gradient(circle at 7% 0, var(--slime) 0 3px, transparent 4px),
+        radial-gradient(circle at 26% 0, var(--slime) 0 2px, transparent 3px),
+        radial-gradient(circle at 64% 0, var(--slime) 0 3px, transparent 4px),
+        radial-gradient(circle at 86% 0, var(--slime) 0 2px, transparent 3px),
+        linear-gradient(90deg, transparent, rgba(116,143,0,.55), transparent);
+    opacity: .55;
+}
+
+@media (max-width: 1050px) {
+    .top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .right-stack {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .page {
+        width: min(95vw, 1500px);
+        padding-top: 10px;
+    }
+
+    .hero {
+        min-height: 200px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    h1 {
+        font-size: clamp(52px, 18vw, 78px);
+    }
+
+    .search-row {
+        grid-template-columns: 1fr;
+    }
+
+    .connection-panel .panel-body {
+        grid-template-columns: 1fr;
+    }
+
+    #playerStatus {
+        grid-column: auto;
+    }
+
+    .connection-panel button {
+        width: 100%;
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .track {
+        grid-template-columns: 62px minmax(0,1fr);
+        padding-right: 35px;
+    }
+
+    .album-wrap {
+        width: 62px;
+        height: 62px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; }
+}
+
+
+/* ===== FILTHIER SWAMP PASS ===== */
+
+body {
+    background:
+        radial-gradient(ellipse at 9% 8%, rgba(95, 112, 0, .18), transparent 23rem),
+        radial-gradient(ellipse at 82% 18%, rgba(49, 87, 18, .18), transparent 30rem),
+        radial-gradient(ellipse at 42% 88%, rgba(90, 72, 10, .17), transparent 34rem),
+        linear-gradient(180deg, #020301 0%, #071006 42%, #020401 100%);
+}
+
+.page {
+    position: relative;
+}
+
+/* irregular swamp haze behind the whole interface */
+.page::before {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .55;
+    background:
+        radial-gradient(ellipse at 17% 31%, rgba(104, 135, 20, .09), transparent 16%),
+        radial-gradient(ellipse at 71% 62%, rgba(60, 96, 24, .11), transparent 19%),
+        radial-gradient(ellipse at 46% 74%, rgba(126, 100, 16, .07), transparent 14%);
+    filter: blur(28px);
+}
+
+/* muddy, stained panels */
+.panel,
+.hero,
+.terminal-boot {
+    background-color: #050804;
+    background-image:
+        radial-gradient(circle at 8% 16%, rgba(131, 145, 42, .075) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 33%, rgba(114, 88, 21, .075) 0 2px, transparent 3px),
+        radial-gradient(circle at 42% 78%, rgba(95, 117, 34, .06) 0 1px, transparent 3px),
+        linear-gradient(127deg, rgba(92, 115, 23, .045), transparent 28%),
+        linear-gradient(180deg, rgba(8, 14, 6, .95), rgba(2, 5, 2, .98));
+    background-size:
+        37px 31px,
+        73px 61px,
+        53px 47px,
+        auto,
+        auto;
+}
+
+/* uneven moss on panel edges */
+.panel::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: -1px;
+    right: -1px;
+    top: -1px;
+    height: 13px;
+    opacity: .72;
+    background:
+        radial-gradient(ellipse at 4% 0, #596d00 0 5px, transparent 6px),
+        radial-gradient(ellipse at 13% 0, #344700 0 3px, transparent 4px),
+        radial-gradient(ellipse at 31% 0, #6a7900 0 4px, transparent 5px),
+        radial-gradient(ellipse at 58% 0, #405500 0 5px, transparent 6px),
+        radial-gradient(ellipse at 79% 0, #657400 0 3px, transparent 4px),
+        radial-gradient(ellipse at 94% 0, #3e5200 0 5px, transparent 6px);
+    filter: blur(.2px);
+}
+
+.panel-head {
+    background:
+        linear-gradient(90deg, rgba(76, 94, 9, .09), transparent 45%),
+        rgba(0,0,0,.30);
+}
+
+/* slime hanging off the top hero */
+.hero {
+    border-color: rgba(151, 194, 0, .30);
+}
+
+.hero::after {
+    content: "▓▒░ SIGNAL FOUND ░▒▓";
+    padding-top: 42px;
+    background:
+        linear-gradient(90deg,
+            transparent 3%,
+            rgba(103, 128, 0, .72) 3% 4%,
+            transparent 4% 15%,
+            rgba(91, 114, 0, .55) 15% 16%,
+            transparent 16% 62%,
+            rgba(117, 141, 0, .55) 62% 63%,
+            transparent 63% 88%,
+            rgba(82, 105, 0, .62) 88% 89%,
+            transparent 89%);
+}
+
+/* less pristine form controls */
+input[type="text"],
+select {
+    border-color: rgba(164, 209, 0, .28);
+    background:
+        radial-gradient(circle at 11% 45%, rgba(98, 121, 14, .08), transparent 16%),
+        linear-gradient(180deg, #020401, #071005);
+}
+
+.filter {
+    position: relative;
+}
+
+.filter::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: 14%;
+    width: 2px;
+    height: 67%;
+    opacity: .45;
+    background:
+        repeating-linear-gradient(
+            180deg,
+            #708800 0 4px,
+            transparent 4px 8px
+        );
+}
+
+/* make the acid green feel biological rather than pristine */
+button {
+    background:
+        radial-gradient(circle at 18% 30%, rgba(56, 72, 0, .22), transparent 13%),
+        radial-gradient(circle at 75% 72%, rgba(70, 78, 0, .18), transparent 18%),
+        linear-gradient(180deg, #c6f622, #8cbd00);
+    text-shadow: 0 1px rgba(255,255,255,.16);
+}
+
+.secondary-button,
+#swampWizardButton {
+    background:
+        radial-gradient(circle at 30% 50%, rgba(107, 130, 12, .08), transparent 35%),
+        #040704;
+}
+
+/* muckier feed */
+.feed-screen {
+    background:
+        linear-gradient(90deg, rgba(0,0,0,.72), rgba(5,15,3,.38)),
+        radial-gradient(ellipse at 79% 75%, rgba(146,190,0,.17), transparent 19rem),
+        radial-gradient(ellipse at 58% 100%, rgba(91,73,7,.18), transparent 18rem),
+        linear-gradient(180deg, #071106, #010301);
+}
+
+.feed-screen::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 42%;
+    opacity: .46;
+    background:
+        radial-gradient(ellipse at 10% 100%, #24380b 0 18%, transparent 19%),
+        radial-gradient(ellipse at 32% 112%, #162b0a 0 24%, transparent 25%),
+        radial-gradient(ellipse at 63% 107%, #2e3b08 0 19%, transparent 20%),
+        radial-gradient(ellipse at 88% 110%, #17280b 0 25%, transparent 26%);
+    filter: blur(2px);
+}
+
+/* dirty specimen cards */
+.track {
+    border-color: rgba(151, 192, 0, .18);
+    background:
+        radial-gradient(circle at 8% 21%, rgba(120, 130, 19, .07), transparent 11%),
+        radial-gradient(circle at 73% 82%, rgba(100, 77, 10, .07), transparent 13%),
+        linear-gradient(90deg, rgba(118, 147, 0, .055), transparent 60%),
+        rgba(1,4,1,.78);
+}
+
+.track:nth-child(odd) {
+    transform: rotate(-.08deg);
+}
+
+.track:nth-child(even) {
+    transform: rotate(.06deg);
+}
+
+.track:nth-child(odd):hover,
+.track:nth-child(even):hover {
+    transform: translateX(2px) rotate(0deg);
+}
+
+.album-wrap {
+    border-color: rgba(169, 201, 33, .32);
+    box-shadow:
+        0 0 0 2px rgba(41, 53, 5, .45),
+        0 7px 16px rgba(0,0,0,.65);
+}
+
+.album-art {
+    filter:
+        saturate(.66)
+        sepia(.10)
+        contrast(1.12)
+        brightness(.80);
+}
+
+/* corroded terminal footer */
+.bottom-cell {
+    background:
+        radial-gradient(circle at 10% 30%, rgba(110, 129, 15, .06), transparent 15%),
+        linear-gradient(180deg, #040704, #020402);
+}
+
+/* scattered swamp spores / screen grime */
+.top-grid::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 98;
+    opacity: .22;
+    background-image:
+        radial-gradient(circle, rgba(181, 212, 70, .34) 0 .7px, transparent .9px),
+        radial-gradient(circle, rgba(109, 90, 25, .32) 0 .8px, transparent 1px);
+    background-position: 0 0, 17px 23px;
+    background-size: 43px 47px, 71px 67px;
+}
+
+/* organic slime underline instead of perfectly clean neon */
+.panel-head h2 {
+    text-shadow:
+        0 0 7px rgba(183,255,0,.18),
+        1px 1px #263400;
+}
+
+.track-name,
+h1 {
+    filter: drop-shadow(0 0 2px rgba(139, 190, 0, .20));
+}
+
+.slime-line {
+    height: 14px;
+    opacity: .85;
+    background:
+        radial-gradient(ellipse at 4% 0, #728800 0 7px, transparent 8px),
+        radial-gradient(ellipse at 18% 0, #405500 0 4px, transparent 5px),
+        radial-gradient(ellipse at 36% 0, #657700 0 6px, transparent 7px),
+        radial-gradient(ellipse at 67% 0, #3e5500 0 5px, transparent 6px),
+        radial-gradient(ellipse at 89% 0, #718300 0 7px, transparent 8px),
+        linear-gradient(90deg, #293600, #778b00 34%, #344600 70%, #647700);
+    clip-path: polygon(
+        0 0, 100% 0, 100% 28%,
+        94% 35%, 93% 75%, 92% 34%,
+        80% 30%, 79% 58%, 78% 31%,
+        62% 38%, 61% 90%, 60% 37%,
+        44% 31%, 43% 66%, 42% 31%,
+        24% 35%, 23% 100%, 22% 34%,
+        8% 30%, 7% 64%, 6% 30%,
+        0 35%
+    );
+}
+
+
+/* ===== ASCII FROGS ===== */
+
+.ascii-frog {
+    margin: 0;
+    color: #9ccc00;
+    font-family: "Courier New", Consolas, monospace;
+    font-size: 9px;
+    line-height: 1.05;
+    letter-spacing: 0;
+    white-space: pre;
+    text-shadow:
+        0 0 6px rgba(183,255,0,.18),
+        1px 1px #182300;
+    opacity: .78;
+    user-select: none;
+    pointer-events: none;
+}
+
+.boot-frog {
+    float: right;
+    margin: -3px 2px 0 14px;
+    color: #b7ff00;
+    opacity: .62;
+}
+
+.console-frog {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    color: #728c00;
+    transform: rotate(-2deg);
+    opacity: .48;
+}
+
+.footer-frog {
+    margin-top: 5px;
+    color: #88ac00;
+    opacity: .60;
+}
+
+.results-frog {
+    position: absolute;
+    right: 14px;
+    bottom: 9px;
+    color: #587000;
+    opacity: .45;
+}
+
+@media (max-width: 650px) {
+    .boot-frog {
+        display: none;
+    }
+
+    .console-frog,
+    .results-frog {
+        opacity: .32;
+        font-size: 8px;
+    }
+}
+
+
+/* ===== SWAMP PERSONALITY PACK ===== */
+
+.ascii-scene {
+    margin: 0;
+    color: #789900;
+    font-family: "Courier New", Consolas, monospace;
+    font-size: 8px;
+    line-height: 1.05;
+    white-space: pre;
+    letter-spacing: 0;
+    text-shadow: 0 0 6px rgba(183,255,0,.13);
+    opacity: .62;
+    user-select: none;
+    pointer-events: none;
+}
+
+.hero-swamp {
+    position: absolute;
+    left: 12px;
+    bottom: 11px;
+    color: #506900;
+    opacity: .43;
+    text-align: left;
+}
+
+.feed-creature {
+    position: absolute;
+    right: 17px;
+    bottom: 11px;
+    z-index: 2;
+    color: #8cb300;
+    opacity: .50;
+}
+
+.panel-vines {
+    position: absolute;
+    right: 7px;
+    top: 52px;
+    color: #4f6800;
+    opacity: .34;
+}
+
+.swamp-warning {
+    margin: 13px 0 0;
+    padding: 8px 10px;
+    border-left: 2px solid #708b00;
+    color: #627b34;
+    background: rgba(105,135,0,.035);
+    font-size: 8px;
+    line-height: 1.55;
+    text-transform: uppercase;
+}
+
+.swamp-warning strong {
+    color: #a5cc16;
+}
+
+.bog-whisper {
+    color: #556b2b;
+    font-size: 8px;
+    font-style: italic;
+}
+
+.bottom-cell.marsh-map {
+    position: relative;
+    overflow: hidden;
+}
+
+.bottom-cell.marsh-map .ascii-scene {
+    color: #6c8900;
+    opacity: .53;
+}
+
+@media (max-width: 650px) {
+    .hero-swamp,
+    .panel-vines {
+        display: none;
+    }
+
+    .feed-creature {
+        font-size: 7px;
+        opacity: .36;
+    }
+}
+
+
+/* ===== FROG OVERLOAD ===== */
+
+.frog-swarm {
+    position: absolute;
+    margin: 0;
+    white-space: pre;
+    color: #87aa00;
+    font-family: "Courier New", Consolas, monospace;
+    font-size: 8px;
+    line-height: 1.05;
+    opacity: .46;
+    text-shadow: 0 0 6px rgba(183,255,0,.16);
+    user-select: none;
+    pointer-events: none;
+}
+
+.frogs-left {
+    left: 9px;
+    bottom: 8px;
+}
+
+.frogs-right {
+    right: 11px;
+    top: 61px;
+    color: #708d00;
+}
+
+.mushroom-patch {
+    margin: 0;
+    white-space: pre;
+    color: #a7bd38;
+    font-family: "Courier New", Consolas, monospace;
+    font-size: 8px;
+    line-height: 1.05;
+    opacity: .52;
+    text-shadow: 0 0 5px rgba(183,255,0,.10);
+    user-select: none;
+    pointer-events: none;
+}
+
+.feed-mushrooms {
+    position: absolute;
+    left: 42%;
+    bottom: 8px;
+    z-index: 2;
+}
+
+.footer-mushrooms {
+    margin-top: 5px;
+    color: #788e2d;
+}
+
+.frog-message {
+    color: #60762f;
+    font-size: 8px;
+    font-style: italic;
+}
+
+@media (max-width: 650px) {
+    .frogs-left,
+    .frogs-right,
+    .feed-mushrooms {
+        display: none;
+    }
+}
+
+
+/* ===== EVEN MORE FROGS ===== */
+
+.frog-choir,
+.frog-corner,
+.frog-patrol {
+    margin: 0;
+    white-space: pre;
+    font-family: "Courier New", Consolas, monospace;
+    line-height: 1.02;
+    letter-spacing: 0;
+    color: #8fb300;
+    text-shadow: 0 0 6px rgba(183,255,0,.16);
+    user-select: none;
+    pointer-events: none;
+}
+
+.frog-choir {
+    padding: 8px 14px 12px;
+    color: #718d00;
+    font-size: 8px;
+    opacity: .55;
+    text-align: center;
+    overflow: hidden;
+}
+
+.frog-corner {
+    position: absolute;
+    z-index: 4;
+    color: #708c00;
+    font-size: 8px;
+    opacity: .43;
+}
+
+.frog-patrol {
+    color: #789500;
+    font-size: 8px;
+    opacity: .58;
+}
+
+.feed-frogs {
+    right: 18px;
+    top: 58px;
+}
+
+.results-frogs-left {
+    left: 7px;
+    bottom: 8px;
+}
+
+.results-frogs-right {
+    right: 8px;
+    top: 57px;
+}
+
+.footer-frog-gang {
+    margin-top: 7px;
+}
+
+@media (max-width: 650px) {
+    .results-frogs-left,
+    .results-frogs-right,
+    .feed-frogs {
+        display: none;
+    }
+
+    .frog-choir {
+        font-size: 7px;
+    }
+}
+
+
+/* ===== DARK BOG SELECT MENUS ===== */
+
+/* Closed select */
+select {
+    color: #b7ff00 !important;
+    background-color: #050905 !important;
+    border-color: rgba(183, 255, 0, .32) !important;
+    color-scheme: dark;
+}
+
+/* Native dropdown choices — supported by Chromium/Windows */
+select option,
+select optgroup {
+    color: #c2d99a !important;
+    background: #071007 !important;
+}
+
+/* Selected/checked option */
+select option:checked {
+    color: #d3ff37 !important;
+    background: #17240a !important;
+}
+
+/* Keep disabled placeholders subdued */
+select option:disabled {
+    color: #61704d !important;
+}
+
+/* Softer focus state: readable, not retina-searing */
+select:focus {
+    outline: 1px solid rgba(183, 255, 0, .55) !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(183, 255, 0, .07) !important;
+}
+
+/* Tell supported browsers to render native form popups dark */
+.bog-console,
+select {
+    color-scheme: dark;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <div class="slime-line"></div>
+
+    <div class="top-grid">
+
+        <div class="left-stack">
+
+            <div class="terminal-boot">
+                <pre class="ascii-frog boot-frog">  @..@
+ (----)
+( >__< )
+ ^^  ^^</pre>
+                <div>// THE BOG IS LISTENING...</div>
+                <div>&gt; INITIALIZING SWAMP PROTOCOLS... <strong>OK</strong></div>
+                <div>&gt; SPOTIFY LINK: <strong>STANDBY</strong></div>
+            </div>
+
+            <section class="hero">
+                <pre class="ascii-scene hero-swamp">       |\/|           .      .
+   \   |  |   /      /|     /|
+    \  |  |  /      / |    / |
+ ~~~~\_|__|_/~~~~~~~~~~~~~~~~~~~~
+  ~  ~   ~     ~  ~     ~    ~
+      _       __
+   __/ \__  _/  \__    __
+ _/       \/       \__/  \_</pre>
+
+                <pre class="frog-swarm frogs-left"> @..@       @..@
+(----)     (----)
+(    )     (    )
+ ^^ ^^      ^^ ^^
+
+       @..@
+      (----)
+     ( >__< )
+      ^^  ^^</pre>
+
+                <div class="hero-inner">
+                    <div class="hero-kicker">:: UNAUTHORIZED SONIC FIELD UNIT ::</div>
+                    <h1>THE<br>MUSIC BOG</h1>
+                    <p class="tagline">WE DIG. <span>YOU LISTEN.</span></p>
+                </div>
+            </section>
+
+            <section class="panel bog-console">
+                <pre class="frog-swarm frogs-right">  @..@
+ (----)
+(  ..  )
+ ^^  ^^
+
+ @..@
+(----)
+(____)
+ ^^</pre>
+
+                <pre class="ascii-scene panel-vines">|
+|\
+| \
+|  @
+| /
+|/
+|
+|\
+| \__
+|    \@
+|</pre>
+
+                <div class="panel-head">
+                    <h2>☣ BOG CONTROLS</h2>
+                    <div class="micro">MANUAL OVERRIDE</div>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="seed-box">
+                        <label for="artistBox">☢ BOG SPECIMEN</label>
+
+                        <input
+                            id="artistBox"
+                            type="text"
+                            placeholder="ENTER AN ARTIST..."
+                        >
+
+                        <div class="seed-note">
+                            Hard artist filter. Leave blank to let the Bog roam freely.
+                        </div>
+
+                        <div class="swamp-warning">
+                            <strong>FIELD NOTE:</strong> If something croaks your name from the reeds,
+                            do not answer it.
+                        </div>
+                    </div>
+
+                    <div class="filter">
+                        <div class="filter-header">
+                            <label for="weirdness">WEIRDNESS</label>
+                            <span id="weirdnessValue">7</span>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="weirdness"
+                            min="1"
+                            max="10"
+                            value="7"
+                        >
+
+                        <div class="range-labels">
+                            <span>Normal-ish</span>
+                            <span class="pink">Bizarre</span>
+                        </div>
+                    </div>
+
+                    <div class="filter">
+                        <div class="filter-header">
+                            <label for="bogDepth">BOG DEPTH</label>
+                            <span id="bogDepthValue">7</span>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="bogDepth"
+                            min="1"
+                            max="10"
+                            value="7"
+                        >
+
+                        <div class="range-labels">
+                            <span>Shallow</span>
+                            <span class="pink">Abyssal</span>
+                        </div>
+                    </div>
+
+                    <div class="filter">
+                        <div class="filter-header">
+                            <label for="accessibility">ACCESSIBILITY</label>
+                            <span id="accessibilityValue">5</span>
+                        </div>
+
+                        <input
+                            type="range"
+                            id="accessibility"
+                            min="1"
+                            max="10"
+                            value="5"
+                        >
+
+                        <div class="range-labels">
+                            <span>Hostile</span>
+                            <span class="pink">Friendly</span>
+                        </div>
+                    </div>
+
+                    <div class="filter">
+                        <div class="filter-header">
+                            <label for="mood">☠ MOOD</label>
+                        </div>
+
+                        <select id="mood">
+                            <option value="any">ANY MOOD</option>
+                            <option value="eerie">EERIE</option>
+                            <option value="dreamlike">DREAMLIKE</option>
+                            <option value="chaotic">CHAOTIC</option>
+                            <option value="melancholic">MELANCHOLIC</option>
+                            <option value="hypnotic">HYPNOTIC</option>
+                            <option value="paranoid">PARANOID</option>
+                            <option value="euphoric">EUPHORIC</option>
+                            <option value="unsettling">UNSETTLING</option>
+                            <option value="absurd">ABSURD</option>
+                        </select>
+                    </div>
+
+                    <div class="filter">
+                        <div class="filter-header">
+                            <label for="flavor">♨ FLAVOR</label>
+                        </div>
+
+                        <select id="flavor">
+                            <option value="any">ANY FLAVOR</option>
+                            <option value="psychedelic">PSYCHEDELIC</option>
+                            <option value="electronic">ELECTRONIC</option>
+                            <option value="folk">FOLK</option>
+                            <option value="punk">PUNK</option>
+                            <option value="rock">ROCK</option>
+                            <option value="jazz">JAZZ</option>
+                            <option value="pop">POP</option>
+                            <option value="industrial">INDUSTRIAL</option>
+                            <option value="ambient">AMBIENT</option>
+                            <option value="noise">NOISE</option>
+                            <option value="outsider">OUTSIDER</option>
+                            <option value="unknown">??? UNIDENTIFIABLE</option>
+                        </select>
+                    </div>
+
+                    <div class="search-row">
+                        <button id="enterBogButton">
+                            ENTER THE BOG
+                        </button>
+
+                        <button id="swampWizardButton">
+                            CONSULT THE SWAMP WIZARD
+                        </button>
+                    </div>
+
+                    <div class="seed-note" style="margin-top:11px;text-align:center;">
+                        THE BOG DOES NOT JUDGE. THE BOG ONLY RECOMMENDS.
+                    </div>
+
+                    <pre class="ascii-frog console-frog">   _   _
+  (.)_(.)
+ _ (   ) _
+/ \/'---'\/ \
+\ (     ) /
+  \_/-\_/</pre>
+
+                </div>
+            </section>
+
+        </div>
+
+        <div class="right-stack">
+
+            <section class="panel connection-panel">
+                <div class="panel-head">
+                    <h2>● SPOTIFY UPLINK</h2>
+                    <div class="micro">EXTERNAL SIGNAL</div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="status">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="spotifyStatus">Checking Spotify connection...</span>
+                    </div>
+
+                    <button id="loginButton">
+                        CONNECT
+                    </button>
+
+                    <button
+                        id="disconnectButton"
+                        class="secondary-button"
+                    >
+                        DISCONNECT
+                    </button>
+
+                    <div id="playerStatus">
+                        Swamp player waking up...
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel feed">
+                <div class="panel-head">
+                    <h2>BOG FEED // LIVE</h2>
+                    <div class="micro">CH. 13</div>
+                </div>
+
+                <div class="feed-screen">
+                    <pre class="frog-corner feed-frogs"> @..@   @..@
+(----) (----)
+(    ) (    )
+ ^^ ^^   ^^ ^^
+
+    @..@
+   (----)
+  ( >__< )
+   ^^  ^^</pre>
+                    <div class="feed-copy">
+                        <div>&gt; <strong>SCANNING DEPTHS...</strong></div>
+                        <div>&gt; DISTURBING THE SEDIMENT...</div>
+                        <div>&gt; UNEARTHING SONIC ODDITIES...</div>
+                        <div>&gt; FROG CHORUS: ONLINE.</div>
+                        <div>&gt; FROG COUNT: INCREASING.</div>
+                        <div>&gt; RIBBIT TRAFFIC: SEVERE.</div>
+                        <div>&gt; PREPARING OFFERINGS...</div>
+                        <div>&gt; AWAITING USER SACRIFICE.</div>
+                    </div>
+                    <pre class="ascii-scene feed-creature">        _     _
+       (o)---(o)
+      /   .-.   \
+     /   /   \   \
+    |   |     |   |
+     \   \___/   /
+      '._     _.'
+         |   |
+     ____|   |____
+ ~~~/             \~~~
+ ~~    ~   ~   ~    ~~</pre>
+                    <div class="feed-glow"></div>
+                </div>
+            </section>
+
+            <section class="panel results-panel">
+                <div class="panel-head">
+                    <h2>⚠ BOG OFFERINGS</h2>
+                    <div class="micro">LIVE RESULTS</div>
+                </div>
+
+                <pre class="frog-corner results-frogs-left"> @..@
+(----)
+(____)
+ ^^ ^^
+
+ @..@
+(----)
+(    )
+ ^^ ^^</pre>
+
+                <pre class="frog-corner results-frogs-right">  @..@
+ (----)
+(  oo  )
+ ^^  ^^
+
+   @..@
+  (----)
+ ( >__< )
+  ^^  ^^</pre>
+
+                <div id="searchResults"></div>
+
+                <div class="bog-whisper" style="padding:0 14px 12px;">
+                    // some tracks sink. some tracks wait.
+                </div>
+
+                <pre class="ascii-frog results-frog">  ＿ノヽ
+ /  ﾟ▽ﾟ)
+(    ノ
+ しーＪ</pre>
+            </section>
+
+        </div>
+
+    </div>
+
+    <pre class="frog-choir"> @..@        @..@       @..@        @..@       @..@
+(----)      (----)     (----)      (----)     (----)
+(    )      (    )     (____)      (    )     ( >__< )
+ ^^ ^^       ^^ ^^      ^^ ^^       ^^ ^^      ^^  ^^
+
+      @..@          @..@          @..@          @..@
+     (----)        (----)        (----)        (----)
+    (  ..  )      ( >__< )      (    )        (____)
+     ^^  ^^        ^^  ^^        ^^ ^^          ^^</pre>
+
+    <div class="bottom-grid">
+        <div class="bottom-cell">
+            <strong>LOG OUTPUT</strong>
+            BOG ACTIVITY WILL APPEAR HERE...<br>
+            TRUST THE PROCESS.<br>
+            DO NOT DRINK THE WATER.
+            <pre class="frog-patrol footer-frog-gang"> @..@  @..@  @..@
+(----)(----)(----)
+ ^^ ^^ ^^ ^^ ^^ ^^</pre>
+            <pre class="ascii-scene" style="margin-top:5px;">       /\
+   ___/  \__
+  /  _  _   \
+ /__|_||_|___\
+    | [] |
+ ~~~|____|~~~~</pre>
+        </div>
+
+        <div class="bottom-cell marsh-map">
+            <strong>MARSH SURVEY // SECTOR 13</strong>
+            <pre class="ascii-scene">    /\       |       /\
+ __/  \__    |   ___/  \_
+/  reeds \___|__/  mud   \
+~~~~~o~~~~~~~~~~~~~~x~~~~~~
+   frog      YOU ARE HERE</pre>
+            </div>
+
+        <div class="bottom-cell">
+            <strong>SIGNAL QUALITY</strong>
+            <div class="signal-bars">
+                <i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i>
+            </div>
+        </div>
+
+        <div class="bottom-cell footer-mantra">
+            <strong>THE BOG WANTS:</strong>
+            CURIOSITY.<br>
+            OPEN EARS.<br>
+            NO EXPECTATIONS.
+            <div class="bog-whisper">"ribbit.exe has encountered no problems."<br>"the frogs know what you listened to."</div>
+            <pre class="ascii-frog footer-frog"> @..@
+(----)
+(    )
+ ^^ ^^</pre>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================
+    // SPOTIFY SETTINGS
+    // =====================================
+
+    const clientId =
+        "840d85cb144a4892abc23f51d126e23a";
+
+
+    const redirectUri =
+        window.location.origin +
+        "/callback.html";
+
+
+
+    // =====================================
+    // TOKEN REFRESH
+    // =====================================
+
+    async function refreshSpotifyToken() {
+
+        const refreshToken =
+            localStorage.getItem(
+                "spotify_refresh_token"
+            );
+
+
+        if (!refreshToken) {
+            return null;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "https://accounts.spotify.com/api/token",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+
+                        body:
+                            new URLSearchParams({
+
+                                grant_type:
+                                    "refresh_token",
+
+                                refresh_token:
+                                    refreshToken,
+
+                                client_id:
+                                    clientId
+                            })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                console.error(
+                    "Token refresh failed:",
+                    data
+                );
+
+                return null;
+            }
+
+
+            localStorage.setItem(
+                "spotify_access_token",
+                data.access_token
+            );
+
+
+            if (data.refresh_token) {
+
+                localStorage.setItem(
+                    "spotify_refresh_token",
+                    data.refresh_token
+                );
+            }
+
+
+            const expiresAt =
+                Date.now() +
+                (data.expires_in || 3600) *
+                1000;
+
+
+            localStorage.setItem(
+                "spotify_token_expires_at",
+                expiresAt.toString()
+            );
+
+
+            return data.access_token;
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            return null;
+        }
+    }
+
+
+
+    async function getValidSpotifyToken() {
+
+        let token =
+            localStorage.getItem(
+                "spotify_access_token"
+            );
+
+
+        const expiresAt =
+            Number(
+                localStorage.getItem(
+                    "spotify_token_expires_at"
+                )
+            );
+
+
+        if (!token) {
+
+            return await refreshSpotifyToken();
+        }
+
+
+        if (
+            expiresAt &&
+            Date.now() >=
+            expiresAt -
+            60000
+        ) {
+
+            const refreshed =
+                await refreshSpotifyToken();
+
+
+            if (refreshed) {
+                token = refreshed;
+            }
+        }
+
+
+        return token;
+    }
+
+
+
+    // =====================================
+    // CONNECTION STATUS
+    // =====================================
+
+    function showDisconnectedState() {
+
+        document.getElementById(
+            "spotifyStatus"
+        ).innerText =
+            "Spotify not connected.";
+
+
+        document.getElementById(
+            "loginButton"
+        ).style.display =
+            "inline-block";
+
+
+        document.getElementById(
+            "disconnectButton"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "statusDot"
+        ).style.background =
+            "#806c46";
+    }
+
+
+
+    async function updateSpotifyStatus() {
+
+        const token =
+            await getValidSpotifyToken();
+
+
+        if (!token) {
+
+            showDisconnectedState();
+
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "https://api.spotify.com/v1/me",
+                    {
+
+                        headers: {
+
+                            Authorization:
+                                "Bearer " +
+                                token
+                        }
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                showDisconnectedState();
+
+                return;
+            }
+
+
+            const user =
+                await response.json();
+
+
+            document.getElementById(
+                "spotifyStatus"
+            ).innerText =
+                "Spotify connected as " +
+                (
+                    user.display_name ||
+                    user.id
+                );
+
+
+            document.getElementById(
+                "loginButton"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "disconnectButton"
+            ).style.display =
+                "inline-block";
+
+
+            document.getElementById(
+                "statusDot"
+            ).style.background =
+                "#8cff4c";
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            showDisconnectedState();
+        }
+    }
+
+
+
+    // =====================================
+    // SLIDERS
+    // =====================================
+
+    const weirdnessSlider =
+        document.getElementById(
+            "weirdness"
+        );
+
+
+    const bogDepthSlider =
+        document.getElementById(
+            "bogDepth"
+        );
+
+
+    const accessibilitySlider =
+        document.getElementById(
+            "accessibility"
+        );
+
+
+    weirdnessSlider.addEventListener(
+        "input",
+        function() {
+
+            document.getElementById(
+                "weirdnessValue"
+            ).innerText =
+                weirdnessSlider.value;
+        }
+    );
+
+
+    bogDepthSlider.addEventListener(
+        "input",
+        function() {
+
+            document.getElementById(
+                "bogDepthValue"
+            ).innerText =
+                bogDepthSlider.value;
+        }
+    );
+
+
+    accessibilitySlider.addEventListener(
+        "input",
+        function() {
+
+            document.getElementById(
+                "accessibilityValue"
+            ).innerText =
+                accessibilitySlider.value;
+        }
+    );
+
+
+
+    // =====================================
+    // LOGIN
+    // =====================================
+
+    function generateRandomString(
+        length
+    ) {
+
+        const possible =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+
+        let text =
+            "";
+
+
+        for (
+            let i = 0;
+            i < length;
+            i++
+        ) {
+
+            text +=
+                possible.charAt(
+                    Math.floor(
+                        Math.random() *
+                        possible.length
+                    )
+                );
+        }
+
+
+        return text;
+    }
+
+
+
+    async function sha256(
+        plain
+    ) {
+
+        const encoder =
+            new TextEncoder();
+
+
+        const data =
+            encoder.encode(
+                plain
+            );
+
+
+        return window.crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+    }
+
+
+
+    function base64encode(
+        input
+    ) {
+
+        return btoa(
+            String.fromCharCode(
+                ...new Uint8Array(
+                    input
+                )
+            )
+        )
+
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+    }
+
+
+
+    async function loginWithSpotify() {
+
+        if (
+            window.location.protocol !== "http:" &&
+            window.location.protocol !== "https:"
+        ) {
+
+            alert(
+                "The Music Bog must be opened through a local web server, not by double-clicking index.html. Start Live Server, then open the localhost/127.0.0.1 address it gives you."
+            );
+
+            return;
+        }
+
+
+        const codeVerifier =
+            generateRandomString(
+                64
+            );
+
+
+        const hashed =
+            await sha256(
+                codeVerifier
+            );
+
+
+        const codeChallenge =
+            base64encode(
+                hashed
+            );
+
+
+        localStorage.setItem(
+            "code_verifier",
+            codeVerifier
+        );
+
+
+        // Save the exact Spotify settings used for this login.
+        // callback.html reads these back so the token exchange cannot
+        // accidentally use a different Client ID or redirect URI.
+
+        localStorage.setItem(
+            "spotify_client_id",
+            clientId
+        );
+
+
+        localStorage.setItem(
+            "spotify_redirect_uri",
+            redirectUri
+        );
+
+
+        const authUrl =
+            new URL(
+                "https://accounts.spotify.com/authorize"
+            );
+
+
+        const params = {
+
+            response_type:
+                "code",
+
+            client_id:
+                clientId,
+
+            redirect_uri:
+                redirectUri,
+
+            scope:
+                "user-read-private streaming user-modify-playback-state user-read-playback-state",
+
+            code_challenge_method:
+                "S256",
+
+            code_challenge:
+                codeChallenge
+        };
+
+
+        authUrl.search =
+            new URLSearchParams(
+                params
+            ).toString();
+
+
+        window.location.href =
+            authUrl.toString();
+    }
+
+
+
+    // =====================================
+    // DISCONNECT
+    // =====================================
+
+    function disconnectSpotify() {
+
+        localStorage.removeItem(
+            "spotify_access_token"
+        );
+
+        localStorage.removeItem(
+            "spotify_refresh_token"
+        );
+
+        localStorage.removeItem(
+            "spotify_token_expires_at"
+        );
+
+        localStorage.removeItem(
+            "code_verifier"
+        );
+
+
+        pauseBogPlayback();
+
+
+        showDisconnectedState();
+    }
+
+
+
+    // =====================================
+    // MOOD TERMS
+    // =====================================
+
+    const moodTerms = {
+
+        eerie: [
+            "eerie",
+            "haunted",
+            "dark",
+            "ghostly"
+        ],
+
+        dreamlike: [
+            "dreamy",
+            "ethereal",
+            "psychedelic",
+            "ambient"
+        ],
+
+        chaotic: [
+            "noise",
+            "frantic",
+            "art punk",
+            "experimental"
+        ],
+
+        melancholic: [
+            "melancholic",
+            "sad",
+            "lo-fi",
+            "slow"
+        ],
+
+        hypnotic: [
+            "hypnotic",
+            "minimal",
+            "drone",
+            "repetitive"
+        ],
+
+        paranoid: [
+            "industrial",
+            "darkwave",
+            "post-punk",
+            "paranoid"
+        ],
+
+        euphoric: [
+            "psychedelic",
+            "electronic",
+            "dance",
+            "euphoric"
+        ],
+
+        unsettling: [
+            "experimental",
+            "outsider",
+            "avant-garde",
+            "unsettling"
+        ],
+
+        absurd: [
+            "novelty",
+            "outsider",
+            "weird",
+            "experimental pop"
+        ]
+    };
+
+
+
+    // =====================================
+    // FLAVOR TERMS
+    // =====================================
+
+    const flavorTerms = {
+
+        psychedelic: [
+            "psychedelic",
+            "acid rock",
+            "psych folk",
+            "space rock"
+        ],
+
+        electronic: [
+            "electronic",
+            "minimal synth",
+            "experimental electronic",
+            "synth"
+        ],
+
+        folk: [
+            "folk",
+            "psych folk",
+            "freak folk",
+            "experimental folk"
+        ],
+
+        punk: [
+            "punk",
+            "art punk",
+            "post-punk",
+            "no wave"
+        ],
+
+        rock: [
+            "experimental rock",
+            "art rock",
+            "garage rock",
+            "psychedelic rock"
+        ],
+
+        jazz: [
+            "jazz",
+            "free jazz",
+            "spiritual jazz",
+            "avant-garde jazz"
+        ],
+
+        pop: [
+            "experimental pop",
+            "art pop",
+            "lo-fi pop",
+            "outsider pop"
+        ],
+
+        industrial: [
+            "industrial",
+            "experimental industrial",
+            "dark ambient",
+            "power electronics"
+        ],
+
+        ambient: [
+            "ambient",
+            "drone",
+            "experimental ambient",
+            "minimal"
+        ],
+
+        noise: [
+            "noise",
+            "noise rock",
+            "experimental noise",
+            "harsh noise"
+        ],
+
+        outsider: [
+            "outsider music",
+            "outsider pop",
+            "lo-fi",
+            "private press"
+        ],
+
+        unknown: [
+            "experimental",
+            "avant-garde",
+            "outsider",
+            "sound collage",
+            "weird music"
+        ]
+    };
+
+
+
+    // =====================================
+    // WEB PLAYBACK PLAYER
+    // =====================================
+
+    let spotifyPlayer =
+        null;
+
+
+    let spotifyDeviceId =
+        null;
+
+
+    let currentPlaybackButton =
+        null;
+
+
+    let stopTimer =
+        null;
+
+
+
+    window.onSpotifyWebPlaybackSDKReady =
+        function() {
+
+            spotifyPlayer =
+                new Spotify.Player({
+
+                    name:
+                        "The Music Bog",
+
+                    getOAuthToken:
+                        async callback => {
+
+                            const token =
+                                await getValidSpotifyToken();
+
+
+                            callback(
+                                token
+                            );
+                        },
+
+                    volume:
+                        0.7
+                });
+
+
+            spotifyPlayer.addListener(
+                "ready",
+                ({ device_id }) => {
+
+                    spotifyDeviceId =
+                        device_id;
+
+
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "🐊 Swamp player ready.";
+                }
+            );
+
+
+            spotifyPlayer.addListener(
+                "not_ready",
+                () => {
+
+                    spotifyDeviceId =
+                        null;
+
+
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "Swamp player went to sleep.";
+                }
+            );
+
+
+            spotifyPlayer.addListener(
+                "account_error",
+                () => {
+
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "Spotify Premium is required for in-page playback.";
+                }
+            );
+
+
+            spotifyPlayer.connect();
+        };
+
+
+
+    // =====================================
+    // ONE MINUTE PLAYBACK
+    // =====================================
+
+    async function pauseBogPlayback() {
+
+        if (stopTimer) {
+
+            clearTimeout(
+                stopTimer
+            );
+
+
+            stopTimer =
+                null;
+        }
+
+
+        if (
+            spotifyDeviceId
+        ) {
+
+            const token =
+                await getValidSpotifyToken();
+
+
+            if (token) {
+
+                await fetch(
+
+                    "https://api.spotify.com/v1/me/player/pause?device_id=" +
+                    encodeURIComponent(
+                        spotifyDeviceId
+                    ),
+
+                    {
+
+                        method:
+                            "PUT",
+
+                        headers: {
+
+                            Authorization:
+                                "Bearer " +
+                                token
+                        }
+                    }
+                );
+            }
+        }
+
+
+        if (
+            currentPlaybackButton
+        ) {
+
+            currentPlaybackButton.innerText =
+                "▶";
+
+
+            currentPlaybackButton.classList.remove(
+                "playing"
+            );
+
+
+            currentPlaybackButton =
+                null;
+        }
+    }
+
+
+
+    async function playBogTrack(
+        spotifyUri,
+        button
+    ) {
+
+        if (!spotifyDeviceId) {
+
+            document.getElementById(
+                "playerStatus"
+            ).innerText =
+                "Swamp player isn't ready yet.";
+
+            return;
+        }
+
+
+        if (
+            currentPlaybackButton ===
+            button
+        ) {
+
+            await pauseBogPlayback();
+
+            return;
+        }
+
+
+        await pauseBogPlayback();
+
+
+        const token =
+            await getValidSpotifyToken();
+
+
+        if (!token) {
+            return;
+        }
+
+
+        if (
+            spotifyPlayer &&
+            spotifyPlayer.activateElement
+        ) {
+
+            try {
+
+                await spotifyPlayer.activateElement();
+
+            } catch (error) {
+
+                console.log(
+                    error
+                );
+            }
+        }
+
+
+        await fetch(
+            "https://api.spotify.com/v1/me/player",
+            {
+
+                method:
+                    "PUT",
+
+                headers: {
+
+                    Authorization:
+                        "Bearer " +
+                        token,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        device_ids: [
+                            spotifyDeviceId
+                        ],
+
+                        play:
+                            false
+                    })
+            }
+        );
+
+
+        const playResponse =
+            await fetch(
+
+                "https://api.spotify.com/v1/me/player/play?device_id=" +
+                encodeURIComponent(
+                    spotifyDeviceId
+                ),
+
+                {
+
+                    method:
+                        "PUT",
+
+                    headers: {
+
+                        Authorization:
+                            "Bearer " +
+                            token,
+
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            uris: [
+                                spotifyUri
+                            ]
+                        })
+                }
+            );
+
+
+        if (!playResponse.ok) {
+
+            document.getElementById(
+                "playerStatus"
+            ).innerText =
+                "Couldn't play that track.";
+
+            return;
+        }
+
+
+        currentPlaybackButton =
+            button;
+
+
+        button.innerText =
+            "❚❚";
+
+
+        button.classList.add(
+            "playing"
+        );
+
+
+        document.getElementById(
+            "playerStatus"
+        ).innerText =
+            "🌿 Playing one minute from the Bog...";
+
+
+        stopTimer =
+            setTimeout(
+                async function() {
+
+                    await pauseBogPlayback();
+
+
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "The one-minute Bog sample has ended.";
+
+                },
+                60000
+            );
+    }
+
+
+
+    function setupSwampPlayers() {
+
+        const buttons =
+            document.querySelectorAll(
+                ".swamp-play-button"
+            );
+
+
+        buttons.forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        playBogTrack(
+                            button.dataset.uri,
+                            button
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+
+
+    // =====================================
+    // ENTER THE BOG
+    // =====================================
+
+    async function searchSpotify() {
+
+        let token =
+            await getValidSpotifyToken();
+
+
+        if (!token) {
+
+            document.getElementById(
+                "searchResults"
+            ).innerText =
+                "Connect Spotify first.";
+
+            return;
+        }
+
+
+        await pauseBogPlayback();
+
+
+
+        // =================================
+        // READ BOG SPECIMEN
+        // =================================
+
+        const artistSearch =
+            document.getElementById(
+                "artistBox"
+            ).value.trim();
+
+
+
+        // =================================
+        // READ OTHER FILTERS
+        // =================================
+
+        const weirdness =
+            Number(
+                document.getElementById(
+                    "weirdness"
+                ).value
+            );
+
+
+        const bogDepth =
+            Number(
+                document.getElementById(
+                    "bogDepth"
+                ).value
+            );
+
+
+        const accessibility =
+            Number(
+                document.getElementById(
+                    "accessibility"
+                ).value
+            );
+
+
+        const mood =
+            document.getElementById(
+                "mood"
+            ).value;
+
+
+        const flavor =
+            document.getElementById(
+                "flavor"
+            ).value;
+
+
+
+        // =================================
+        // WEIRDNESS
+        // =================================
+
+        let weirdTerms =
+            [];
+
+
+        if (
+            weirdness <= 3
+        ) {
+
+            weirdTerms = [
+                "indie",
+                "alternative",
+                "psychedelic",
+                "art rock"
+            ];
+
+        } else if (
+            weirdness <= 6
+        ) {
+
+            weirdTerms = [
+                "experimental",
+                "post-punk",
+                "psychedelic",
+                "lo-fi"
+            ];
+
+        } else if (
+            weirdness <= 8
+        ) {
+
+            weirdTerms = [
+                "experimental",
+                "outsider",
+                "avant-garde",
+                "noise"
+            ];
+
+        } else {
+
+            weirdTerms = [
+                "outsider music",
+                "avant-garde",
+                "noise",
+                "experimental"
+            ];
+        }
+
+
+        const weirdTerm =
+
+            weirdTerms[
+
+                Math.floor(
+                    Math.random() *
+                    weirdTerms.length
+                )
+            ];
+
+
+
+        // =================================
+        // MOOD
+        // =================================
+
+        let moodTerm =
+            "";
+
+
+        if (
+            mood !== "any" &&
+            moodTerms[mood]
+        ) {
+
+            const choices =
+                moodTerms[mood];
+
+
+            moodTerm =
+
+                choices[
+
+                    Math.floor(
+                        Math.random() *
+                        choices.length
+                    )
+                ];
+        }
+
+
+
+        // =================================
+        // FLAVOR
+        // =================================
+
+        let flavorTerm =
+            "";
+
+
+        if (
+            flavor !== "any" &&
+            flavorTerms[flavor]
+        ) {
+
+            const choices =
+                flavorTerms[flavor];
+
+
+            flavorTerm =
+
+                choices[
+
+                    Math.floor(
+                        Math.random() *
+                        choices.length
+                    )
+                ];
+        }
+
+
+
+        // =================================
+        // ACCESSIBILITY
+        // =================================
+
+        let accessibilityTerm =
+            "";
+
+
+        if (
+            accessibility <= 3
+        ) {
+
+            accessibilityTerm =
+                "experimental";
+
+        } else if (
+            accessibility >= 8
+        ) {
+
+            accessibilityTerm =
+                "melodic";
+        }
+
+
+
+        // =================================
+        // BUILD SPOTIFY SEARCH
+        // =================================
+
+        let searchQuery =
+            "";
+
+
+        const hasSpecificSeed =
+            Boolean(artistSearch);
+
+
+        // BOG SPECIMEN HARD FILTER
+        // If an artist is entered, only search for tracks by that artist.
+        // The other Bog filters are ignored in this mode so they cannot
+        // drag the search away from the requested artist.
+
+        let seedArtistName =
+            artistSearch;
+
+
+        if (hasSpecificSeed) {
+
+            // HARD ARTIST MODE
+            // Search Spotify only by the requested artist.
+            // The other Bog controls will influence ranking AFTER
+            // Spotify returns tracks, so they cannot break the artist search.
+
+            searchQuery +=
+                `artist:"${artistSearch}"`;
+
+        } else {
+
+            // PURE BOG MODE
+            // No artist entered: use the normal discovery controls
+            // directly in Spotify Search.
+
+            if (flavorTerm) {
+
+                searchQuery +=
+                    flavorTerm + " ";
+            }
+
+
+            searchQuery +=
+                weirdTerm + " ";
+
+
+            if (moodTerm) {
+
+                searchQuery +=
+                    moodTerm + " ";
+            }
+
+
+            if (accessibilityTerm) {
+
+                searchQuery +=
+                    accessibilityTerm;
+            }
+        }
+
+
+        searchQuery =
+            searchQuery.trim();
+
+
+        // Extremely defensive fallback in case every optional
+        // term somehow ends up empty.
+
+        if (!searchQuery) {
+            searchQuery =
+                "experimental";
+        }
+
+
+        // =================================
+        // BOG DEPTH
+        // =================================
+
+        let offset =
+            0;
+
+
+        if (
+            bogDepth <= 3
+        ) {
+
+            offset =
+                Math.floor(
+                    Math.random() *
+                    5
+                );
+
+        } else if (
+            bogDepth <= 6
+        ) {
+
+            offset =
+                10 +
+
+                Math.floor(
+                    Math.random() *
+                    20
+                );
+
+        } else if (
+            bogDepth <= 8
+        ) {
+
+            offset =
+                30 +
+
+                Math.floor(
+                    Math.random() *
+                    40
+                );
+
+        } else {
+
+            offset =
+                70 +
+
+                Math.floor(
+                    Math.random() *
+                    80
+                );
+        }
+
+
+
+        // In artist mode, Bog Depth still nudges how deep into that
+        // artist's search results we go, but keep it conservative.
+
+        if (hasSpecificSeed) {
+
+            if (bogDepth <= 3) {
+
+                offset = 0;
+
+            } else if (bogDepth <= 6) {
+
+                offset = 2;
+
+            } else if (bogDepth <= 8) {
+
+                offset = 5;
+
+            } else {
+
+                offset = 8;
+            }
+        }
+
+
+        // =================================
+        // SEARCH
+        // =================================
+
+        document.getElementById(
+            "searchResults"
+        ).innerHTML = `
+
+            <p>
+                🌿 The Bog is stirring...
+            </p>
+
+            <p>
+                Searching for:
+                <strong>
+                    ${searchQuery}
+                </strong>
+            </p>
+
+            ${
+                hasSpecificSeed
+                ? `
+                <p>
+                    Bog Specimen: <strong>${artistSearch}</strong>
+                    — artist filter active; Bog controls are ranking the tracks
+
+                </p>
+                `
+                : ""
+            }
+        `;
+
+
+        const url =
+
+            "https://api.spotify.com/v1/search?q=" +
+
+            encodeURIComponent(
+                searchQuery
+            ) +
+
+            "&type=track" +
+
+            "&limit=10" +
+
+            "&offset=" +
+
+            offset;
+
+
+        let response =
+            await fetch(
+                url,
+                {
+
+                    headers: {
+
+                        Authorization:
+                            "Bearer " +
+                            token
+                    }
+                }
+            );
+
+
+        if (
+            response.status ===
+            401
+        ) {
+
+            token =
+                await refreshSpotifyToken();
+
+
+            response =
+                await fetch(
+                    url,
+                    {
+
+                        headers: {
+
+                            Authorization:
+                                "Bearer " +
+                                token
+                        }
+                    }
+                );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            document.getElementById(
+                "searchResults"
+            ).innerText =
+                "Spotify error: " +
+                JSON.stringify(
+                    data
+                );
+
+            return;
+        }
+
+
+
+        // =================================
+        // FILTER NON-MUSIC STUFF
+        // =================================
+
+        const normalizeSearchText = value =>
+            (value || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, "")
+                .replace(/\s+/g, " ")
+                .trim();
+
+
+        const normalizedSeedArtist =
+            normalizeSearchText(seedArtistName || artistSearch);
+
+
+        let tracks =
+
+            (data.tracks?.items || []).filter(
+                track => {
+
+                    const trackName =
+                        normalizeSearchText(track.name);
+
+                    const artistNames =
+                        (track.artists || [])
+                            .map(artist =>
+                                normalizeSearchText(artist.name)
+                            );
+
+                    const albumName =
+                        normalizeSearchText(track.album?.name);
+
+                    const combinedText =
+                        [trackName, albumName, ...artistNames]
+                            .join(" ");
+
+
+                    const blockedWords = [
+                        "audiobook",
+                        "audio book",
+                        "chapter ",
+                        "spoken word",
+                        "narrated",
+                        "narration",
+                        "podcast",
+                        "episode ",
+                        "lecture",
+                        "sermon"
+                    ];
+
+
+                    const blocked =
+                        blockedWords.some(word =>
+                            combinedText.includes(
+                                normalizeSearchText(word)
+                            )
+                        );
+
+
+                    if (blocked) {
+                        return false;
+                    }
+
+
+                    // BOG SPECIMEN HARD FILTER
+                    // Spotify search can be fuzzy, so verify the result
+                    // really belongs to the requested artist.
+
+                    if (normalizedSeedArtist) {
+
+                        const isRequestedArtist =
+                            artistNames.some(name =>
+                                name === normalizedSeedArtist
+                            );
+
+
+                        if (!isRequestedArtist) {
+                            return false;
+                        }
+                    }
+
+
+                    return true;
+                }
+            );
+
+
+        if (hasSpecificSeed) {
+
+            // ARTIST MODE FILTER INFLUENCE
+            // Spotify doesn't expose "weirdness" or "mood" for each track,
+            // so use the controls as ranking nudges rather than hard filters.
+            // This keeps the artist reliable while still letting the Bog
+            // influence which tracks rise to the top.
+
+            const moodWords =
+                mood !== "any"
+                    ? (moodTerms[mood] || []).map(word => word.toLowerCase())
+                    : [];
+
+
+            const flavorWords =
+                flavor !== "any"
+                    ? (flavorTerms[flavor] || []).map(word => word.toLowerCase())
+                    : [];
+
+
+            tracks =
+                tracks
+                    .map(track => {
+
+                        const searchableText =
+                            (
+                                track.name +
+                                " " +
+                                track.album.name
+                            ).toLowerCase();
+
+
+                        let bogScore =
+                            0;
+
+
+                        // Mood is a soft text-title hint.
+                        for (const word of moodWords) {
+
+                            if (searchableText.includes(word)) {
+
+                                bogScore += 3;
+                            }
+                        }
+
+
+                        // Flavor is also a soft hint.
+                        for (const word of flavorWords) {
+
+                            if (searchableText.includes(word)) {
+
+                                bogScore += 3;
+                            }
+                        }
+
+
+                        // Weirdness adds controlled randomness:
+                        // higher weirdness = more chance for unexpected tracks
+                        // to jump upward.
+                        bogScore +=
+                            Math.random() *
+                            weirdness;
+
+
+                        // Accessibility lightly favors shorter tracks when high,
+                        // and allows longer tracks to rise when low.
+                        const minutes =
+                            track.duration_ms /
+                            60000;
+
+
+                        if (accessibility >= 7) {
+
+                            bogScore +=
+                                Math.max(
+                                    0,
+                                    6 - minutes
+                                );
+
+                        } else if (accessibility <= 3) {
+
+                            bogScore +=
+                                Math.min(
+                                    minutes,
+                                    10
+                                ) * 0.4;
+                        }
+
+
+                        return {
+                            track,
+                            bogScore
+                        };
+                    })
+                    .sort(
+                        (a, b) =>
+                            b.bogScore -
+                            a.bogScore
+                    )
+                    .map(item =>
+                        item.track
+                    );
+
+        } else {
+
+            // Pure Bog mode stays loose and random.
+
+            tracks.sort(
+                () =>
+                    Math.random() -
+                    0.5
+            );
+        }
+
+
+        tracks =
+            tracks.slice(
+                0,
+                5
+            );
+
+
+
+        // =================================
+        // DISPLAY RESULTS
+        // =================================
+
+        let html = `
+            <p>
+                🐸 THE BOG HAS SPOKEN
+            </p>
+        `;
+
+
+        for (
+            const track
+            of tracks
+        ) {
+
+            const image =
+                track.album.images?.[0]?.url ||
+                "";
+
+
+            html += `
+
+                <div class="track">
+
+                    ${
+                        image
+                        ? `
+
+                        <div class="album-wrap">
+
+                            <img
+                                src="${image}"
+                                class="album-art"
+                                alt="Album artwork"
+                            >
+
+                            <button
+                                class="swamp-play-button"
+                                data-uri="${track.uri}"
+                                aria-label="Play one minute"
+                            >
+                                ▶
+                            </button>
+
+                        </div>
+
+                        `
+                        : ""
+                    }
+
+
+                    <div class="track-info">
+
+                        <div class="track-name">
+                            ${track.name}
+                        </div>
+
+                        <div class="artist">
+
+                            ${track.artists
+                                .map(
+                                    artist =>
+                                        artist.name
+                                )
+                                .join(", ")}
+
+                        </div>
+
+                        <div class="album">
+                            ${track.album.name}
+                        </div>
+
+                        <a
+                            href="${track.external_urls.spotify}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Listen on Spotify ↗
+                        </a>
+
+                    </div>
+
+                </div>
+            `;
+        }
+
+
+        if (
+            tracks.length === 0
+        ) {
+
+            html += `
+
+                <p>
+                    Nothing crawled out.
+                    ${hasSpecificSeed
+                        ? "Check the Bog Specimen spelling."
+                        : "Try loosening your filters."}
+                </p>
+            `;
+        }
+
+
+        document.getElementById(
+            "searchResults"
+        ).innerHTML =
+            html;
+
+
+        setupSwampPlayers();
+    }
+
+
+
+    // =====================================
+    // CONSULT THE SWAMP WIZARD
+    // =====================================
+
+    function consultSwampWizard() {
+
+        const randomWeirdness =
+            Math.floor(
+                Math.random() *
+                10
+            ) + 1;
+
+
+        const randomBogDepth =
+            Math.floor(
+                Math.random() *
+                10
+            ) + 1;
+
+
+        const randomAccessibility =
+            Math.floor(
+                Math.random() *
+                10
+            ) + 1;
+
+
+        const moods = [
+            "eerie",
+            "dreamlike",
+            "chaotic",
+            "melancholic",
+            "hypnotic",
+            "paranoid",
+            "euphoric",
+            "unsettling",
+            "absurd"
+        ];
+
+
+        const flavors = [
+            "psychedelic",
+            "electronic",
+            "folk",
+            "punk",
+            "rock",
+            "jazz",
+            "pop",
+            "industrial",
+            "ambient",
+            "noise",
+            "outsider",
+            "unknown"
+        ];
+
+
+        const randomMood =
+
+            moods[
+                Math.floor(
+                    Math.random() *
+                    moods.length
+                )
+            ];
+
+
+        const randomFlavor =
+
+            flavors[
+                Math.floor(
+                    Math.random() *
+                    flavors.length
+                )
+            ];
+
+
+        document.getElementById(
+            "weirdness"
+        ).value =
+            randomWeirdness;
+
+
+        document.getElementById(
+            "bogDepth"
+        ).value =
+            randomBogDepth;
+
+
+        document.getElementById(
+            "accessibility"
+        ).value =
+            randomAccessibility;
+
+
+        document.getElementById(
+            "weirdnessValue"
+        ).innerText =
+            randomWeirdness;
+
+
+        document.getElementById(
+            "bogDepthValue"
+        ).innerText =
+            randomBogDepth;
+
+
+        document.getElementById(
+            "accessibilityValue"
+        ).innerText =
+            randomAccessibility;
+
+
+        document.getElementById(
+            "mood"
+        ).value =
+            randomMood;
+
+
+        document.getElementById(
+            "flavor"
+        ).value =
+            randomFlavor;
+
+
+        // Clear the Bog Specimen when
+        // consulting the Wizard.
+
+        document.getElementById(
+            "artistBox"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "searchResults"
+        ).innerHTML = `
+
+            <p>
+                🧙 The Swamp Wizard
+                has been consulted.
+            </p>
+
+            <p>
+                The waters churn...
+            </p>
+        `;
+
+
+        setTimeout(
+            function() {
+
+                searchSpotify();
+
+            },
+            800
+        );
+    }
+
+
+
+    // =====================================
+    // BUTTONS
+    // =====================================
+
+    document
+        .getElementById(
+            "loginButton"
+        )
+        .addEventListener(
+            "click",
+            loginWithSpotify
+        );
+
+
+    document
+        .getElementById(
+            "disconnectButton"
+        )
+        .addEventListener(
+            "click",
+            disconnectSpotify
+        );
+
+
+    document
+        .getElementById(
+            "enterBogButton"
+        )
+        .addEventListener(
+            "click",
+            searchSpotify
+        );
+
+
+    document
+        .getElementById(
+            "swampWizardButton"
+        )
+        .addEventListener(
+            "click",
+            consultSwampWizard
+        );
+
+
+
+    // Pressing Enter in the Bog Specimen box
+    // searches the Bog.
+
+    document
+        .getElementById(
+            "artistBox"
+        )
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    searchSpotify();
+                }
+            }
+        );
+
+
+
+    // =====================================
+    // STARTUP
+    // =====================================
+
+    updateSpotifyStatus();
+
+
+    // Load Spotify's Web Playback SDK only
+    // after onSpotifyWebPlaybackSDKReady exists.
+
+    const spotifySdkScript =
+        document.createElement("script");
+
+    spotifySdkScript.src =
+        "https://sdk.scdn.co/spotify-player.js";
+
+    spotifySdkScript.async =
+        true;
+
+    document.body.appendChild(
+        spotifySdkScript
+    );
+
+</script>
+
+</body>
+
+</html>
