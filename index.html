@@ -1793,8 +1793,14 @@ select {
         "840d85cb144a4892abc23f51d126e23a";
 
 
+    const pathBase =
+        window.location.hostname.endsWith("github.io")
+            ? window.location.pathname.replace(/\/[^/]*$/, "").replace(/\/$/, "")
+            : "";
+
     const redirectUri =
         window.location.origin +
+        pathBase +
         "/callback.html";
 
 
