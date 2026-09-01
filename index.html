@@ -2165,6 +2165,19 @@ select {
     }
 
 
+    function generateSecureRandomString(length = 48) {
+        const bytes = new Uint8Array(length);
+        window.crypto.getRandomValues(bytes);
+
+        return Array.from(
+            bytes,
+            byte => (
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
+            )[byte % 66]
+        ).join("");
+    }
+
+
 
     async function sha256(
         plain
@@ -2223,8 +2236,13 @@ select {
 
 
         const codeVerifier =
-            generateRandomString(
+            generateSecureRandomString(
                 64
+            );
+
+        const oauthState =
+            generateSecureRandomString(
+                32
             );
 
 
@@ -2243,6 +2261,11 @@ select {
         localStorage.setItem(
             "code_verifier",
             codeVerifier
+        );
+
+        localStorage.setItem(
+            "spotify_oauth_state",
+            oauthState
         );
 
 
@@ -2286,7 +2309,10 @@ select {
                 "S256",
 
             code_challenge:
-                codeChallenge
+                codeChallenge,
+
+            state:
+                oauthState
         };
 
 
@@ -2322,6 +2348,10 @@ select {
 
         localStorage.removeItem(
             "code_verifier"
+        );
+
+        localStorage.removeItem(
+            "spotify_oauth_state"
         );
 
 
@@ -2536,9 +2566,16 @@ select {
                                 await getValidSpotifyToken();
 
 
-                            callback(
-                                token
-                            );
+                            if (token) {
+                                callback(
+                                    token
+                                );
+                            } else {
+                                document.getElementById(
+                                    "playerStatus"
+                                ).innerText =
+                                    "Connect Spotify before starting the swamp player.";
+                            }
                         },
 
                     volume:
@@ -2577,6 +2614,47 @@ select {
                 }
             );
 
+
+            spotifyPlayer.addListener(
+                "authentication_error",
+                ({ message }) => {
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "Spotify player authentication failed. Disconnect and reconnect Spotify.";
+
+                    console.error(
+                        "Spotify authentication_error:",
+                        message
+                    );
+                }
+            );
+
+            spotifyPlayer.addListener(
+                "initialization_error",
+                ({ message }) => {
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "Spotify player could not initialize in this browser.";
+
+                    console.error(
+                        "Spotify initialization_error:",
+                        message
+                    );
+                }
+            );
+
+            spotifyPlayer.addListener(
+                "playback_error",
+                ({ message }) => {
+                    document.getElementById(
+                        "playerStatus"
+                    ).innerText =
+                        "Spotify playback error: " +
+                        message;
+                }
+            );
 
             spotifyPlayer.addListener(
                 "account_error",
