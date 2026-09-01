@@ -97,6 +97,16 @@
                 "error"
             );
 
+        const returnedState =
+            params.get(
+                "state"
+            );
+
+        const expectedState =
+            localStorage.getItem(
+                "spotify_oauth_state"
+            );
+
 
         if (spotifyError) {
 
@@ -121,6 +131,28 @@
 
             details.innerText =
                 "Go back to The Music Bog and press CONNECT SPOTIFY again.";
+
+            backLink.style.display =
+                "block";
+
+            return;
+        }
+
+
+        if (
+            !expectedState ||
+            !returnedState ||
+            returnedState !== expectedState
+        ) {
+            status.innerText =
+                "Spotify login safety check failed.";
+
+            details.innerText =
+                "The returned OAuth state did not match. Return to The Music Bog and connect Spotify again.";
+
+            localStorage.removeItem(
+                "spotify_oauth_state"
+            );
 
             backLink.style.display =
                 "block";
@@ -211,12 +243,20 @@
                 status.innerText =
                     "Spotify token exchange failed.";
 
-                details.innerText =
-                    JSON.stringify(
-                        data,
-                        null,
-                        2
-                    );
+                if (data && data.error === "invalid_grant") {
+                    details.innerText =
+                        "Spotify rejected the one-time login code. This usually means the callback URL did not exactly match the URL used during login, or the code was already used. Return to The Music Bog and connect again.";
+                } else if (data && data.error === "invalid_client") {
+                    details.innerText =
+                        "Spotify rejected the Client ID. Check that The Music Bog is using the same Spotify app you configured in the Developer Dashboard.";
+                } else {
+                    details.innerText =
+                        JSON.stringify(
+                            data,
+                            null,
+                            2
+                        );
+                }
 
                 backLink.style.display =
                     "block";
@@ -275,6 +315,10 @@
 
             localStorage.removeItem(
                 "code_verifier"
+            );
+
+            localStorage.removeItem(
+                "spotify_oauth_state"
             );
 
 
