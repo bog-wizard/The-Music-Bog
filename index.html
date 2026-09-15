@@ -3269,8 +3269,9 @@ select {
 
             if (!response.ok) {
 
-                console.warn(
-                    "YouTube tunnel error:",
+                console.error(
+                    "YouTube Bog API error:",
+                    response.status,
                     data
                 );
 
@@ -3773,6 +3774,23 @@ select {
         `;
 
 
+        const youtubeStatusId =
+            "youtubeBogStatus";
+
+
+        document.getElementById(
+            "searchResults"
+        ).insertAdjacentHTML(
+            "beforeend",
+            `
+            <div id="${youtubeStatusId}" style="margin-top:24px;">
+                <p>📼 YOUTUBE FINDS</p>
+                <p>🐸 Searching YouTube...</p>
+            </div>
+            `
+        );
+
+
         const youtubePromise =
             searchYouTubeMusic({
                 artistSearch,
@@ -3781,6 +3799,96 @@ select {
                 bogDepth,
                 mood,
                 flavor
+            })
+            .then(result => {
+
+                const status =
+                    document.getElementById(
+                        youtubeStatusId
+                    );
+
+
+                if (!status) {
+                    return result;
+                }
+
+
+                if (!result.enabled) {
+
+                    status.innerHTML = `
+                        <p>📼 YOUTUBE FINDS</p>
+                        <p>
+                            ⚠ YouTube is not configured in this build.
+                        </p>
+                    `;
+
+                    return result;
+                }
+
+
+                if (result.error) {
+
+                    status.innerHTML = `
+                        <p>📼 YOUTUBE FINDS</p>
+                        <p>
+                            ⚠ YouTube error:
+                            ${escapeBogHTML(result.error)}
+                        </p>
+                    `;
+
+                    return result;
+                }
+
+
+                status.innerHTML = `
+                    <p>📼 YOUTUBE FINDS</p>
+                    <p>
+                        🐸 ${result.items.length}
+                        artifact${result.items.length === 1 ? "" : "s"}
+                        dredged up.
+                    </p>
+                `;
+
+
+                return result;
+            })
+            .catch(error => {
+
+                console.error(
+                    "YouTube Bog fatal error:",
+                    error
+                );
+
+
+                const status =
+                    document.getElementById(
+                        youtubeStatusId
+                    );
+
+
+                if (status) {
+
+                    status.innerHTML = `
+                        <p>📼 YOUTUBE FINDS</p>
+                        <p>
+                            ⚠ YouTube error:
+                            ${escapeBogHTML(
+                                error?.message ||
+                                String(error)
+                            )}
+                        </p>
+                    `;
+                }
+
+
+                return {
+                    enabled: true,
+                    query: "",
+                    items: [],
+                    error:
+                        error?.message ||
+                        String(error)
+                };
             });
 
 
@@ -4171,7 +4279,7 @@ select {
             html += `
 
                 <p style="margin-top:26px;">
-                    📼 YOUTUBE FINDS
+                    🐸 YOUTUBE ARTIFACTS
                 </p>
 
                 <p>
