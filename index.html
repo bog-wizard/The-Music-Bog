@@ -3208,7 +3208,7 @@ select {
         document
             .querySelectorAll(".youtube-listen-button")
             .forEach(button => {
-                button.textContent = "▶ PLAY AUDIO";
+                button.textContent = "▶";
             });
 
 
@@ -3280,7 +3280,7 @@ select {
         activeYouTubeBogButton = button;
 
         button.textContent =
-            "■ STOP AUDIO";
+            "■";
     }
 
 
@@ -4500,6 +4500,16 @@ select {
                                     alt="YouTube thumbnail"
                                 >
 
+                                <button
+                                    class="swamp-play-button youtube-listen-button"
+                                    type="button"
+                                    data-youtube-id="${videoId}"
+                                    onclick="toggleYouTubeBogPlayer(this)"
+                                    aria-label="Play YouTube audio"
+                                >
+                                    ▶
+                                </button>
+
                             </div>
                             `
                             : ""
@@ -4520,14 +4530,6 @@ select {
                                 Found in the YouTube bog
                             </div>
 
-                            <button
-                                class="listen-button youtube-listen-button"
-                                type="button"
-                                data-youtube-id="${videoId}"
-                                onclick="toggleYouTubeBogPlayer(this)"
-                            >
-                                ▶ PLAY AUDIO
-                            </button>
 
                         </div>
 
