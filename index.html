@@ -3422,12 +3422,25 @@ select {
                     of data.items || []
                 ) {
 
+                    const title =
+                        item.snippet?.title || "";
+
+
                     const haystack =
                         (
-                            (item.snippet?.title || "") +
+                            title +
                             " " +
                             (item.snippet?.description || "")
                         ).toLowerCase();
+
+
+                    // Hashtag-style titles are usually Shorts, spammy uploads,
+                    // or low-quality discovery results. Keep them out entirely.
+                    if (
+                        title.includes("#")
+                    ) {
+                        continue;
+                    }
 
 
                     if (
