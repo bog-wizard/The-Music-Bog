@@ -2958,7 +2958,7 @@ select {
     //
     // Visitors never need to paste or connect anything.
     const YOUTUBE_API_KEY =
-        "AIzaSyCfGbKnIjzuQQBoqBYX0409xM8CLQWItfQ";
+        "AIzaSyBXT6E9DYFZJNbJShTFiB0rapq5OaGZIVM";
 
 
     function escapeBogHTML(value) {
@@ -3211,21 +3211,35 @@ select {
         flavor
     }) {
 
-        const apiKey =
-            YOUTUBE_API_KEY.trim();
+        let apiKey = "";
 
 
-        if (
-            !apiKey ||
-            apiKey.includes(
-                "AIzaSyCfGbKnIjzuQQBoqBYX0409xM8CLQWItfQ"
-            )
-        ) {
+        try {
+
+            apiKey =
+                String(
+                    YOUTUBE_API_KEY || ""
+                ).trim();
+
+        } catch (error) {
+
+            console.error(
+                "YouTube API key variable error:",
+                error
+            );
+        }
+
+
+        // Do not silently skip YouTube anymore.
+        // If a key is present, always attempt the request.
+        if (!apiKey) {
 
             return {
-                enabled: false,
+                enabled: true,
                 query: "",
-                items: []
+                items: [],
+                error:
+                    "YouTube API key is empty."
             };
         }
 
@@ -3255,6 +3269,16 @@ select {
 
 
         try {
+
+            console.log(
+                "🐸 YouTube Bog search starting:",
+                {
+                    query: youtubeQuery,
+                    keyPresent: apiKey.length > 0,
+                    keyLength: apiKey.length
+                }
+            );
+
 
             const response =
                 await fetch(
@@ -3809,19 +3833,6 @@ select {
 
 
                 if (!status) {
-                    return result;
-                }
-
-
-                if (!result.enabled) {
-
-                    status.innerHTML = `
-                        <p>📼 YOUTUBE FINDS</p>
-                        <p>
-                            ⚠ YouTube is not configured in this build.
-                        </p>
-                    `;
-
                     return result;
                 }
 
