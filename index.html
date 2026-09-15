@@ -3482,6 +3482,121 @@ select {
                 );
 
 
+        // Dredge out Shorts / very short clips.
+        // Search results do not directly include duration, so fetch duration
+        // metadata for the candidate video IDs and keep videos over 60 sec.
+        if (items.length) {
+
+            try {
+
+                const ids =
+                    items
+                        .map(
+                            item =>
+                                item.id.videoId
+                        )
+                        .join(",");
+
+
+                const detailParams =
+                    new URLSearchParams({
+                        part: "contentDetails",
+                        id: ids,
+                        key: apiKey
+                    });
+
+
+                const detailResponse =
+                    await fetch(
+                        "https://www.googleapis.com/youtube/v3/videos?" +
+                        detailParams.toString()
+                    );
+
+
+                const detailData =
+                    await detailResponse.json();
+
+
+                if (detailResponse.ok) {
+
+                    const durations =
+                        new Map(
+                            (detailData.items || [])
+                                .map(
+                                    video => [
+                                        video.id,
+                                        video.contentDetails?.duration || ""
+                                    ]
+                                )
+                        );
+
+
+                    function isoDurationSeconds(
+                        duration
+                    ) {
+
+                        const match =
+                            duration.match(
+                                /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/
+                            );
+
+
+                        if (!match) {
+                            return 0;
+                        }
+
+
+                        return (
+                            Number(match[1] || 0) * 3600 +
+                            Number(match[2] || 0) * 60 +
+                            Number(match[3] || 0)
+                        );
+                    }
+
+
+                    items =
+                        items.filter(
+                            item => {
+
+                                const duration =
+                                    durations.get(
+                                        item.id.videoId
+                                    );
+
+
+                                // Missing metadata is rejected rather than
+                                // letting an unknown Short slip into the Bog.
+                                if (!duration) {
+                                    return false;
+                                }
+
+
+                                return (
+                                    isoDurationSeconds(
+                                        duration
+                                    ) > 60
+                                );
+                            }
+                        );
+
+                } else {
+
+                    console.warn(
+                        "YouTube duration filter failed:",
+                        detailData
+                    );
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "YouTube Shorts filter error:",
+                    error
+                );
+            }
+        }
+
+
         // High Weirdness/Depth deliberately loosens relevance ordering.
         if (
             weirdness >= 6 ||
