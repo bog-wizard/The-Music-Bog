@@ -3129,7 +3129,7 @@ select {
                     [
                         artistSearch,
                         modifierPool[i],
-                        "music"
+                        "music audio song album"
                     ]
                         .filter(Boolean)
                         .join(" ")
@@ -3165,7 +3165,8 @@ select {
                 queries.push(
                     [
                         branch,
-                        modifierPool[i]
+                        modifierPool[i],
+                        "music audio song album"
                     ]
                         .filter(Boolean)
                         .join(" ")
@@ -3348,7 +3349,37 @@ select {
             "audiobook",
             "chapter",
             "lecture",
-            "sermon"
+            "sermon",
+            "video essay",
+            "essay",
+            "explained",
+            "analysis",
+            "analyzing",
+            "breakdown",
+            "retrospective",
+            "documentary",
+            "history of",
+            "the story of",
+            "why this",
+            "why is",
+            "why was",
+            "ranking",
+            "ranked",
+            "tier list",
+            "iceberg",
+            "deep dive",
+            "discussion",
+            "commentary",
+            "critic",
+            "critique",
+            "meaning of",
+            "what makes",
+            "how to",
+            "behind the",
+            "making of",
+            "every album",
+            "discography",
+            "lore"
         ];
 
 
@@ -3448,6 +3479,34 @@ select {
                             word =>
                                 haystack.includes(
                                     word
+                                )
+                        )
+                    ) {
+                        continue;
+                    }
+
+
+                    // Reject titles that strongly resemble explanatory/commentary
+                    // videos rather than an actual piece of music.
+                    const lowerTitle =
+                        title.toLowerCase();
+
+
+                    const commentaryPatterns = [
+                        /\bwhy\b.*\b(song|album|music|band|artist)\b/,
+                        /\b(song|album|music|band|artist)\b.*\bexplained\b/,
+                        /\bthe\s+(rise|fall|history|story)\s+of\b/,
+                        /\b(an?|the)\s+analysis\s+of\b/,
+                        /\bwhat\s+happened\s+to\b/,
+                        /\bhow\s+.*\bchanged\s+music\b/
+                    ];
+
+
+                    if (
+                        commentaryPatterns.some(
+                            pattern =>
+                                pattern.test(
+                                    lowerTitle
                                 )
                         )
                     ) {
