@@ -2958,7 +2958,7 @@ select {
     //
     // Visitors never need to paste or connect anything.
     const YOUTUBE_API_KEY =
-        "AIzaSyBXT6E9DYFZJNbJShTFiB0rapq5OaGZIVM";
+        "PASTE_YOUR_RESTRICTED_YOUTUBE_API_KEY_HERE";
 
 
     function escapeBogHTML(value) {
@@ -3716,17 +3716,12 @@ select {
             await getValidSpotifyToken();
 
 
-        if (!token) {
-
-            document.getElementById(
-                "searchResults"
-            ).innerText =
-                "Connect Spotify first.";
-
-            return;
-        }
+        const spotifyConnected =
+            Boolean(token);
 
 
+        // Spotify is optional. With no Spotify connection,
+        // the Bog keeps searching with YouTube only.
         await pauseBogPlayback();
 
 
@@ -4245,63 +4240,79 @@ select {
             offset;
 
 
-        let response =
-            await fetch(
-                url,
-                {
-
-                    headers: {
-
-                        Authorization:
-                            "Bearer " +
-                            token
-                    }
-                }
-            );
+        let data = {
+            tracks: {
+                items: []
+            }
+        };
 
 
-        if (
-            response.status ===
-            401
-        ) {
+        if (spotifyConnected) {
 
-            token =
-                await refreshSpotifyToken();
-
-
-            response =
+            let response =
                 await fetch(
                     url,
                     {
-
                         headers: {
-
                             Authorization:
                                 "Bearer " +
                                 token
                         }
                     }
                 );
-        }
 
 
-        const data =
-            await response.json();
+            if (
+                response.status ===
+                401
+            ) {
+
+                token =
+                    await refreshSpotifyToken();
 
 
-        if (!response.ok) {
+                if (token) {
 
-            document.getElementById(
-                "searchResults"
-            ).innerText =
-                "Spotify error: " +
-                JSON.stringify(
-                    data
+                    response =
+                        await fetch(
+                            url,
+                            {
+                                headers: {
+                                    Authorization:
+                                        "Bearer " +
+                                        token
+                                }
+                            }
+                        );
+                }
+            }
+
+
+            if (response.ok) {
+
+                data =
+                    await response.json();
+
+            } else {
+
+                let spotifyError = {};
+
+
+                try {
+
+                    spotifyError =
+                        await response.json();
+
+                } catch (_) {}
+
+
+                console.warn(
+                    "Spotify unavailable; continuing with YouTube only.",
+                    response.status,
+                    spotifyError
                 );
-
-            return;
+            }
         }
-
 
 
         // =================================
@@ -4528,6 +4539,17 @@ select {
             <p>
                 🐸 THE BOG HAS SPOKEN
             </p>
+
+            ${
+                spotifyConnected
+                    ? ""
+                    : `
+                        <p>
+                            📼 Spotify disconnected —
+                            YouTube-only dredge active.
+                        </p>
+                    `
+            }
         `;
 
 
