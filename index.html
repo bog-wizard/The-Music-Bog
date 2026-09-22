@@ -1382,12 +1382,102 @@ select {
     color-scheme: dark;
 }
 
+
+
+/* =====================================
+   CRT SWAMP FILTER
+   ===================================== */
+
+body.crt-on::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 0px,
+            rgba(0, 0, 0, 0) 2px,
+            rgba(0, 0, 0, .18) 3px,
+            rgba(0, 0, 0, .18) 4px
+        );
+    mix-blend-mode: multiply;
+    opacity: .62;
+}
+
+body.crt-on::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(130, 255, 70, .035) 0%,
+            rgba(0, 0, 0, 0) 58%,
+            rgba(0, 0, 0, .42) 100%
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 0, 90, .018),
+            rgba(0, 255, 80, .018),
+            rgba(40, 80, 255, .018)
+        );
+}
+
+body.crt-on .page {
+    animation: bog-crt-flicker 5.5s infinite steps(1, end);
+    text-shadow:
+        -0.35px 0 rgba(255, 0, 100, .28),
+         0.35px 0 rgba(60, 255, 90, .25),
+         0 0 5px rgba(180, 255, 70, .08);
+}
+
+@keyframes bog-crt-flicker {
+    0%, 96%, 98%, 100% { opacity: 1; }
+    97% { opacity: .975; }
+    99% { opacity: .988; }
+}
+
+.crt-toggle {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 10001;
+    width: auto;
+    padding: 8px 11px;
+    border: 1px solid #728c43;
+    background: rgba(5, 12, 5, .94);
+    color: #b7ff00;
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: .08em;
+    box-shadow:
+        0 0 10px rgba(183, 255, 0, .12),
+        inset 0 0 10px rgba(183, 255, 0, .035);
+}
+
+.crt-toggle:hover {
+    background: #17240a;
+    color: #d3ff37;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.crt-on .page {
+        animation: none;
+    }
+}
+
 </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐸</text></svg>">
 </head>
 
 
-<body>
+<body class="crt-on">
+
+<button id="crtToggle" class="crt-toggle" type="button" aria-pressed="true">[ CRT: ON ]</button>
 
 <div class="page">
 
@@ -5032,6 +5122,65 @@ select {
             }
         );
 
+
+
+    // =====================================
+    // CRT FILTER TOGGLE
+    // =====================================
+
+    const crtToggle =
+        document.getElementById("crtToggle");
+
+
+    function setCrtMode(enabled) {
+
+        document.body.classList.toggle(
+            "crt-on",
+            enabled
+        );
+
+
+        crtToggle.textContent =
+            enabled
+                ? "[ CRT: ON ]"
+                : "[ CRT: OFF ]";
+
+
+        crtToggle.setAttribute(
+            "aria-pressed",
+            String(enabled)
+        );
+
+
+        localStorage.setItem(
+            "music_bog_crt",
+            enabled ? "on" : "off"
+        );
+    }
+
+
+    const savedCrtMode =
+        localStorage.getItem(
+            "music_bog_crt"
+        );
+
+
+    setCrtMode(
+        savedCrtMode !== "off"
+    );
+
+
+    crtToggle.addEventListener(
+        "click",
+        function() {
+
+            setCrtMode(
+                !document.body.classList.contains(
+                    "crt-on"
+                )
+            );
+        }
+    );
 
 
     // =====================================
