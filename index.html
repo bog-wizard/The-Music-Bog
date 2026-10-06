@@ -4917,19 +4917,23 @@ if (
 
 
         if (
-            tracks.length === 0
-        ) {
+    tracks.length === 0 &&
+    (
+        !youtubeResults.enabled ||
+        youtubeResults.items.length === 0
+    )
+) {
 
-            html += `
+    html += `
 
-                <p>
-                    Nothing crawled out.
-                    ${hasSpecificSeed
-                        ? "Check the Bog Specimen spelling."
-                        : "Try loosening your filters."}
-                </p>
-            `;
-        }
+        <p>
+            Nothing crawled out.
+            ${hasSpecificSeed
+                ? "Check the Bog Specimen spelling."
+                : "Try loosening your filters."}
+        </p>
+    `;
+}
 
 
         document.getElementById(
