@@ -3824,7 +3824,32 @@ body .page {
             ).value.trim();
 
 
+// =================================
+// EASTER EGG: THE OPERATOR
+// =================================
 
+if (
+    artistSearch.toLowerCase() === "frog"
+) {
+
+    document.getElementById(
+        "searchResults"
+    ).innerHTML = `
+        <p>
+            🐸 SPECIMEN REJECTED
+        </p>
+
+        <p>
+            YOU CANNOT SEARCH FOR THE OPERATOR.
+        </p>
+
+        <p>
+            THE OPERATOR IS ALREADY HERE.
+        </p>
+    `;
+
+    return;
+}
         // =================================
         // READ OTHER FILTERS
         // =================================
@@ -4636,10 +4661,34 @@ body .page {
                             📼 Spotify disconnected —
                             YouTube-only dredge active.
                         </p>
+                        
                     `
             }
         `;
+// =================================
+// EASTER EGG: MAXIMUM BOG
+// =================================
 
+if (
+    weirdness === 10 &&
+    bogDepth === 10 &&
+    accessibility === 1
+) {
+
+    html += `
+        <p>
+            ⚠ BOG PRESSURE CRITICAL
+        </p>
+
+        <p>
+            SOMETHING HAS NOTICED YOU.
+        </p>
+
+        <p>
+            DO NOT LOOK BEHIND THE TERMINAL.
+        </p>
+    `;
+}
 
         for (
             const track
@@ -5121,7 +5170,222 @@ body .page {
         );
 
 
+// =====================================
+// EASTER EGG: FROG INVASION
+// ↑ ↑ ↓ ↓ ← → ← → B A
+// =====================================
 
+const bogKonamiCode = [
+    "ArrowUp",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowLeft",
+    "ArrowRight",
+    "b",
+    "a"
+];
+
+let bogKonamiProgress = 0;
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        const expectedKey =
+            bogKonamiCode[
+                bogKonamiProgress
+            ];
+
+
+        if (
+            event.key.toLowerCase() ===
+            expectedKey.toLowerCase()
+        ) {
+
+            bogKonamiProgress++;
+
+
+            if (
+                bogKonamiProgress ===
+                bogKonamiCode.length
+            ) {
+
+                bogKonamiProgress = 0;
+
+                unleashBogFrogs();
+            }
+
+        } else {
+
+            bogKonamiProgress =
+                event.key.toLowerCase() ===
+                bogKonamiCode[0].toLowerCase()
+                    ? 1
+                    : 0;
+        }
+    }
+);
+
+
+function unleashBogFrogs() {
+
+    const invasion =
+        document.createElement(
+            "div"
+        );
+
+
+    invasion.style.position =
+        "fixed";
+
+    invasion.style.inset =
+        "0";
+
+    invasion.style.zIndex =
+        "999999";
+
+    invasion.style.pointerEvents =
+        "none";
+
+    invasion.style.overflow =
+        "hidden";
+
+    invasion.style.background =
+        "rgba(0, 10, 0, .82)";
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+
+    message.innerHTML = `
+        🐸 THE BOG REMEMBERS 🐸
+        <br>
+        <span style="
+            font-size:14px;
+            color:#ff3f82;
+        ">
+            FROG SIGNAL ACQUIRED
+        </span>
+    `;
+
+
+    message.style.position =
+        "absolute";
+
+    message.style.left =
+        "50%";
+
+    message.style.top =
+        "50%";
+
+    message.style.transform =
+        "translate(-50%, -50%)";
+
+    message.style.color =
+        "#b7ff00";
+
+    message.style.fontFamily =
+        '"Courier New", monospace';
+
+    message.style.fontSize =
+        "clamp(22px, 4vw, 48px)";
+
+    message.style.fontWeight =
+        "900";
+
+    message.style.textAlign =
+        "center";
+
+    message.style.textShadow =
+        "0 0 18px #b7ff00";
+
+    message.style.zIndex =
+        "2";
+
+
+    invasion.appendChild(
+        message
+    );
+
+
+    for (
+        let i = 0;
+        i < 45;
+        i++
+    ) {
+
+        const frog =
+            document.createElement(
+                "div"
+            );
+
+
+        frog.textContent =
+            "🐸";
+
+
+        frog.style.position =
+            "absolute";
+
+        frog.style.left =
+            Math.random() *
+            100 +
+            "%";
+
+        frog.style.top =
+            Math.random() *
+            100 +
+            "%";
+
+        frog.style.fontSize =
+            (
+                18 +
+                Math.random() *
+                42
+            ) +
+            "px";
+
+        frog.style.transform =
+            `rotate(${
+                Math.random() *
+                360
+            }deg)`;
+
+        frog.style.opacity =
+            String(
+                0.35 +
+                Math.random() *
+                0.65
+            );
+
+
+        invasion.appendChild(
+            frog
+        );
+    }
+
+
+    document.body.appendChild(
+        invasion
+    );
+
+
+    setTimeout(
+        function() {
+
+            invasion.remove();
+
+        },
+        4000
+    );
+}
     // =====================================
     // STARTUP
     // =====================================
