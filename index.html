@@ -3560,7 +3560,17 @@ body .page {
                     ) {
                         continue;
                     }
-
+                    // Reject titles containing emoji.
+                    // Keeps decorative/sensational uploads out of the Bog.
+                    
+                    const emojiPattern =
+                        /\p{Extended_Pictographic}/u;
+                    
+                    if (
+                        emojiPattern.test(title)
+                    ) {
+                        continue;
+                    }
 
                     if (
                         blockedWords.some(
