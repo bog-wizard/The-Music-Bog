@@ -1816,6 +1816,54 @@ body .page {
         <p>THE SPECIMEN JAR IS EMPTY.</p>
     </div>
 </section>
+                <section
+    id="bogArchive"
+    style="
+        margin-top: 35px;
+        padding: 20px;
+        border: 1px solid #668844;
+        background: rgba(0, 20, 0, 0.5);
+    "
+>
+    <h2>🐸 THE BOG ARCHIVE</h2>
+
+    <p>RECORDS OF THINGS THAT CRAWLED OUT.</p>
+
+    <input
+        id="bogArchiveSearch"
+        type="search"
+        placeholder="SEARCH THE ARCHIVE..."
+        style="
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #061006;
+            color: #aaff55;
+            border: 1px solid #668844;
+            font-family: monospace;
+        "
+    >
+
+    <div id="bogArchiveResults">
+        <p>NO SPECIMENS FOUND IN THE ARCHIVE.</p>
+    </div>
+
+    <button
+        id="clearBogArchiveButton"
+        type="button"
+        style="
+            margin-top: 15px;
+            padding: 8px 14px;
+            background: transparent;
+            color: #ff5577;
+            border: 1px solid #ff5577;
+            cursor: pointer;
+            font-family: monospace;
+        "
+    >
+        ✕ EMPTY ARCHIVE
+    </button>
+</section>
                 <div class="bog-whisper" style="padding:0 14px 12px;">
                     // some tracks sink. some tracks wait.
                 </div>
@@ -3936,6 +3984,110 @@ function banishBogVideo(videoId, button) {
 
     console.log("🐸 BANISHED FROM THE BOG:", videoId);
 }
+    // =====================================
+// THE BOG ARCHIVE
+// =====================================
+
+const BOG_ARCHIVE_KEY = "music_bog_archive";
+const BOG_ARCHIVE_LIMIT = 300;
+
+function getBogArchive() {
+    try {
+        const data = JSON.parse(
+            localStorage.getItem(BOG_ARCHIVE_KEY) || "[]"
+        );
+
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function archiveBogDiscoveries(items) {
+    const archive = getBogArchive();
+
+    for (const item of items) {
+        const videoId = item.id?.videoId;
+        if (!videoId) continue;
+
+        const existing = archive.findIndex(
+            entry => entry.videoId === videoId
+        );
+
+        if (existing !== -1) {
+            archive.splice(existing, 1);
+        }
+
+        archive.unshift({
+            videoId,
+            title: item.snippet?.title || "Unknown",
+            channel: item.snippet?.channelTitle || "Unknown",
+            discoveredAt: Date.now()
+        });
+    }
+
+    try {
+        localStorage.setItem(
+            BOG_ARCHIVE_KEY,
+            JSON.stringify(
+                archive.slice(0, BOG_ARCHIVE_LIMIT)
+            )
+        );
+    } catch (error) {
+        console.warn("Bog archive could not be saved:", error);
+    }
+
+    renderBogArchive();
+}
+
+function renderBogArchive() {
+    const container = document.getElementById("bogArchiveResults");
+    const search = document.getElementById("bogArchiveSearch");
+
+    if (!container) return;
+
+    const term = (search?.value || "").trim().toLowerCase();
+
+    const archive = getBogArchive().filter(item =>
+        String(item.title || "").toLowerCase().includes(term) ||
+        String(item.channel || "").toLowerCase().includes(term)
+    );
+
+    if (!archive.length) {
+        container.innerHTML =
+            "<p>NO SPECIMENS FOUND IN THE ARCHIVE.</p>";
+        return;
+    }
+
+    container.innerHTML = archive.map(item => `
+        <div class="track">
+            <div class="track-info">
+                <div class="track-name">
+                    ${escapeBogHTML(item.title)}
+                </div>
+
+                <div class="artist">
+                    ${escapeBogHTML(item.channel)}
+                </div>
+
+                <a
+                    href="https://www.youtube.com/watch?v=${encodeURIComponent(item.videoId)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ▶ REVISIT SPECIMEN ↗
+                </a>
+            </div>
+        </div>
+    `).join("");
+}
+
+function clearBogArchive() {
+    if (!confirm("EMPTY THE BOG ARCHIVE?")) return;
+
+    localStorage.removeItem(BOG_ARCHIVE_KEY);
+    renderBogArchive();
+}
 // =====================================
 // THE BOG REMEMBERS
 // Anti-repeat system
@@ -4845,7 +4997,10 @@ if (
 
         const youtubeResults =
             await youtubePromise;
-
+// Store displayed YouTube discoveries.
+archiveBogDiscoveries(
+    youtubeResults.items || []
+);
 
 
         // =================================
@@ -5650,6 +5805,19 @@ document
     });
 
 renderSavedBogSpecimens();
+    // =====================================
+// BOG ARCHIVE STARTUP
+// =====================================
+
+document
+    .getElementById("bogArchiveSearch")
+    ?.addEventListener("input", renderBogArchive);
+
+document
+    .getElementById("clearBogArchiveButton")
+    ?.addEventListener("click", clearBogArchive);
+
+renderBogArchive();
     // =====================================
     // STARTUP
     // =====================================
