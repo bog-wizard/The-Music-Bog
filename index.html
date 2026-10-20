@@ -3699,15 +3699,27 @@ function buildYouTubeQueries({
     bogDepth >= 8
         ? 10
         : 8;
+// =====================================
+// PRIORITIZE NEW DISCOVERIES
+// =====================================
 
+items = prioritizeUnheardBogVideos(items);
+
+const selectedVideos = items.slice(
+    0,
+    resultCount
+);
+
+rememberBogVideos(
+    selectedVideos.map(
+        item => item.id.videoId
+    )
+);
 
         return {
             enabled: true,
             queries,
-            items:
-                items.slice(
-                    0,
-                    resultCount
+            items: selectedVideos,
                 ),
             error:
                 items.length
@@ -3716,7 +3728,67 @@ function buildYouTubeQueries({
         };
     }
 
+// =====================================
+// THE BOG REMEMBERS
+// Anti-repeat system
+// =====================================
 
+const BOG_HISTORY_KEY = "music_bog_seen_videos";
+const BOG_HISTORY_LIMIT = 300;
+
+function getBogHistory() {
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem(BOG_HISTORY_KEY) || "[]"
+        );
+
+        return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function rememberBogVideos(videoIds) {
+    const history = getBogHistory();
+
+    for (const id of videoIds) {
+        const index = history.indexOf(id);
+
+        if (index !== -1) {
+            history.splice(index, 1);
+        }
+
+        history.push(id);
+    }
+
+    const recent = history.slice(-BOG_HISTORY_LIMIT);
+
+    try {
+        localStorage.setItem(
+            BOG_HISTORY_KEY,
+            JSON.stringify(recent)
+        );
+    } catch (error) {
+        console.warn("Bog memory unavailable:", error);
+    }
+}
+
+function prioritizeUnheardBogVideos(items) {
+    const seen = new Set(getBogHistory());
+
+    const unseen = items.filter(
+        item => !seen.has(item.id?.videoId)
+    );
+
+    const familiar = items.filter(
+        item => seen.has(item.id?.videoId)
+    );
+
+    return [
+        ...shuffleBogArray(unseen),
+        ...shuffleBogArray(familiar)
+    ];
+}
 
     // =====================================
     // ENTER THE BOG
