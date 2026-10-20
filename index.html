@@ -3703,8 +3703,17 @@ function buildYouTubeQueries({
 // PRIORITIZE NEW DISCOVERIES
 // =====================================
 
-items = prioritizeUnheardBogVideos(items);
+// Remove permanently banished specimens.
+const banishedVideoIds = new Set(
+    getBanishedBogVideos()
+);
 
+items = items.filter(
+    item => !banishedVideoIds.has(item.id?.videoId)
+);
+
+// Prioritize discoveries that haven't appeared before.
+items = prioritizeUnheardBogVideos(items);
 const selectedVideos = items.slice(
     0,
     resultCount
@@ -3727,7 +3736,48 @@ rememberBogVideos(
 };
 
     }
+// =====================================
+// THE BOG'S BANISHMENT LIST
+// =====================================
 
+const BOG_BANISHED_KEY = "music_bog_banished";
+
+function getBanishedBogVideos() {
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem(BOG_BANISHED_KEY) || "[]"
+        );
+
+        return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function banishBogVideo(videoId, button) {
+    if (!videoId) return;
+
+    const banished = new Set(getBanishedBogVideos());
+    banished.add(videoId);
+
+    try {
+        localStorage.setItem(
+            BOG_BANISHED_KEY,
+            JSON.stringify([...banished])
+        );
+    } catch (error) {
+        console.warn("Banishment could not be saved:", error);
+        return;
+    }
+
+    const track = button.closest(".track");
+
+    if (track) {
+        track.remove();
+    }
+
+    console.log("🐸 BANISHED FROM THE BOG:", videoId);
+}
 // =====================================
 // THE BOG REMEMBERS
 // Anti-repeat system
@@ -4871,7 +4921,24 @@ if (
                             <div class="album">
                                 Found in the YouTube bog
                             </div>
-
+<button
+    type="button"
+    onclick="banishBogVideo('${videoId}', this)"
+    style="
+        margin-top: 10px;
+        padding: 6px 12px;
+        background: transparent;
+        color: #ff5577;
+        border: 1px solid #ff5577;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        cursor: pointer;
+        letter-spacing: 1px;
+    "
+>
+    ✕ BANISH
+</button>
 
                         </div>
 
