@@ -1797,7 +1797,25 @@ body .page {
   ^^  ^^</pre>
 
                 <div id="searchResults"></div>
+<section
+    id="specimenJar"
+    style="
+        margin-top: 35px;
+        padding: 20px;
+        border: 1px solid #668844;
+        background: rgba(0, 20, 0, 0.5);
+    "
+>
+    <h2>🐸 THE SPECIMEN JAR</h2>
 
+    <p>
+        PRESERVED DISCOVERIES FROM THE DEPTHS.
+    </p>
+
+    <div id="savedBogSpecimens">
+        <p>THE SPECIMEN JAR IS EMPTY.</p>
+    </div>
+</section>
                 <div class="bog-whisper" style="padding:0 14px 12px;">
                     // some tracks sink. some tracks wait.
                 </div>
@@ -3736,6 +3754,146 @@ rememberBogVideos(
 };
 
     }
+    // =====================================
+// THE SPECIMEN JAR
+// Saved YouTube discoveries
+// =====================================
+
+const BOG_SAVED_KEY = "music_bog_saved";
+
+function getSavedBogSpecimens() {
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem(BOG_SAVED_KEY) || "[]"
+        );
+
+        return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveBogSpecimen(videoId, title, channel) {
+    if (!videoId) return;
+
+    const saved = getSavedBogSpecimens();
+
+    if (saved.some(item => item.videoId === videoId)) {
+        return;
+    }
+
+    saved.unshift({
+        videoId,
+        title,
+        channel,
+        savedAt: Date.now()
+    });
+
+    try {
+        localStorage.setItem(
+            BOG_SAVED_KEY,
+            JSON.stringify(saved)
+        );
+    } catch (error) {
+        console.warn("Could not save specimen:", error);
+        return;
+    }
+
+    renderSavedBogSpecimens();
+}
+
+function removeBogSpecimen(videoId) {
+    const saved = getSavedBogSpecimens().filter(
+        item => item.videoId !== videoId
+    );
+
+    try {
+        localStorage.setItem(
+            BOG_SAVED_KEY,
+            JSON.stringify(saved)
+        );
+    } catch (error) {
+        console.warn("Could not remove specimen:", error);
+        return;
+    }
+
+    renderSavedBogSpecimens();
+}
+
+function renderSavedBogSpecimens() {
+    const container = document.getElementById(
+        "savedBogSpecimens"
+    );
+
+    if (!container) return;
+
+    const saved = getSavedBogSpecimens();
+
+    if (!saved.length) {
+        container.innerHTML =
+            "<p>THE SPECIMEN JAR IS EMPTY.</p>";
+        return;
+    }
+
+    container.innerHTML = saved.map(item => `
+        <div class="track">
+            <div class="track-info">
+                <div class="track-name">
+                    ${escapeBogHTML(item.title)}
+                </div>
+
+                <div class="artist">
+                    ${escapeBogHTML(item.channel)}
+                </div>
+
+                <a
+                    href="https://www.youtube.com/watch?v=${encodeURIComponent(item.videoId)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ▶ LISTEN ON YOUTUBE ↗
+                </a>
+
+                <button
+                    type="button"
+                    data-remove-specimen="${escapeBogHTML(item.videoId)}"
+                    style="
+                        display: block;
+                        margin-top: 10px;
+                        background: transparent;
+                        color: #ff5577;
+                        border: 1px solid #ff5577;
+                        padding: 6px 12px;
+                        cursor: pointer;
+                        font-family: monospace;
+                    "
+                >
+                    ✕ REMOVE
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function saveBogSpecimenFromButton(button) {
+    const track = button.closest(".track");
+    if (!track) return;
+
+    const videoId = button.dataset.saveId;
+    const title = track.querySelector(".track-name")?.textContent.trim() || "Unknown";
+    const channel = track.querySelector(".artist")?.textContent.trim() || "Unknown";
+
+    saveBogSpecimen(videoId, title, channel);
+
+    if (
+        getSavedBogSpecimens().some(
+            item => item.videoId === videoId
+        )
+    ) {
+        button.textContent = "✓ SAVED";
+        button.disabled = true;
+    }
+}
 // =====================================
 // THE BOG'S BANISHMENT LIST
 // =====================================
@@ -4939,6 +5097,26 @@ if (
 >
     ✕ BANISH
 </button>
+<button
+    type="button"
+    data-save-id="${videoId}"
+    onclick="saveBogSpecimenFromButton(this)"
+    style="
+        margin-top: 10px;
+        margin-left: 8px;
+        padding: 6px 12px;
+        background: transparent;
+        color: #aaff55;
+        border: 1px solid #aaff55;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        cursor: pointer;
+        letter-spacing: 1px;
+    "
+>
+    + SAVE SPECIMEN
+</button>
 
                         </div>
 
@@ -5453,6 +5631,25 @@ function unleashBogFrogs() {
         4000
     );
 }
+    // =====================================
+// SPECIMEN JAR STARTUP
+// =====================================
+
+document
+    .getElementById("savedBogSpecimens")
+    ?.addEventListener("click", function(event) {
+        const button = event.target.closest(
+            "[data-remove-specimen]"
+        );
+
+        if (!button) return;
+
+        removeBogSpecimen(
+            button.dataset.removeSpecimen
+        );
+    });
+
+renderSavedBogSpecimens();
     // =====================================
     // STARTUP
     // =====================================
