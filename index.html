@@ -3093,188 +3093,102 @@ body .page {
     }
 
 
-    function buildYouTubeQueries({
-        artistSearch,
-        searchQuery,
-        weirdness,
-        bogDepth,
-        accessibility,
-        mood,
-        flavor
-    }) {
+   
+function buildYouTubeQueries({
+    artistSearch,
+    searchQuery,
+    weirdness,
+    bogDepth,
+    accessibility,
+    mood,
+    flavor
+}) {
 
-        const accessible = [
-            "deep cuts",
-            "rare tracks",
-            "live session",
-            "album track",
-            "obscure music"
-        ];
+    const accessible = [
+        "deep cuts",
+        "rare tracks",
+        "live session",
+        "album track",
+        "obscure music"
+    ];
 
+    const underground = [
+        "private press",
+        "demo tape",
+        "cassette rip",
+        "small label",
+        "archival recording",
+        "rare full album",
+        "underground compilation"
+    ];
 
-        const underground = [
-            "private press",
-            "demo tape",
-            "cassette rip",
-            "small label",
-            "archival recording",
-            "rare full album",
-            "underground compilation"
-        ];
+    const strange = [
+        "outsider music",
+        "home recording",
+        "experimental tape",
+        "lost recording",
+        "weird full album",
+        "obscure compilation",
+        "DIY recording",
+        "avant garde archive"
+    ];
 
+    let modifierPool = [...accessible];
 
-        const strange = [
-            "outsider music",
-            "home recording",
-            "experimental tape",
-            "lost recording",
-            "weird full album",
-            "obscure compilation",
-            "DIY recording",
-            "avant garde archive"
-        ];
+    if (bogDepth >= 5 || weirdness >= 5) {
+        modifierPool.push(...underground);
+    }
 
+    if (bogDepth >= 8 || weirdness >= 8) {
+        modifierPool.push(...strange);
+    }
 
-        let modifierPool =
-            accessible;
-
-
-        if (
-            bogDepth >= 5 ||
-            weirdness >= 5
-        ) {
-
-            modifierPool =
-                modifierPool.concat(
-                    underground
-                );
-        }
-
-
-        if (
-            bogDepth >= 8 ||
-            weirdness >= 8
-        ) {
-
-            modifierPool =
-                modifierPool.concat(
-                    strange
-                );
-        }
-
-
-        if (accessibility <= 3) {
-
-            modifierPool =
-                modifierPool.concat(
-                    [
-                        "difficult listening",
-                        "noise tape",
-                        "outsider recording"
-                    ]
-                );
-        }
-
-
-        if (accessibility >= 8) {
-
-            modifierPool =
-                modifierPool.concat(
-                    [
-                        "melodic deep cuts",
-                        "accessible rare tracks"
-                    ]
-                );
-        }
-
-
-        modifierPool =
-            shuffleBogArray(
-                [...new Set(modifierPool)]
-            );
-
-
-        const queryCount =
-            bogDepth >= 8 ||
-            weirdness >= 8
-                ? 4
-                : 3;
-
-
-        const queries =
-            [];
-
-
-        if (artistSearch) {
-
-            for (
-                let i = 0;
-                i < queryCount;
-                i++
-            ) {
-
-                queries.push(
-                    [
-                        artistSearch,
-                        modifierPool[i],
-                        "music audio song album"
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                );
-            }
-
-        } else {
-
-            const baseParts =
-                [
-                    flavor !== "any"
-                        ? flavor
-                        : "",
-                    mood !== "any"
-                        ? mood
-                        : ""
-                ]
-                    .filter(Boolean);
-
-
-            for (
-                let i = 0;
-                i < queryCount;
-                i++
-            ) {
-
-                const branch =
-                    i === 0
-                        ? searchQuery
-                        : baseParts.join(" ");
-
-
-                queries.push(
-                    [
-                        branch,
-                        modifierPool[i],
-                        "music audio song album"
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .replace(/\s+/g, " ")
-                        .trim()
-                );
-            }
-        }
-
-
-        return [
-            ...new Set(
-                queries.filter(Boolean)
-            )
-        ].slice(
-            0,
-            4
+    if (accessibility <= 3) {
+        modifierPool.push(
+            "difficult listening",
+            "noise tape",
+            "outsider recording"
         );
     }
 
+    if (accessibility >= 8) {
+        modifierPool.push(
+            "melodic deep cuts",
+            "accessible rare tracks"
+        );
+    }
+
+    const modifiers = shuffleBogArray(
+        [...new Set(modifierPool)]
+    );
+
+    const modifier = modifiers[0];
+
+    let query;
+
+    if (artistSearch) {
+        query = [
+            artistSearch,
+            modifier,
+            "music"
+        ].join(" ");
+    } else {
+        const base = [
+            flavor !== "any" ? flavor : "",
+            mood !== "any" ? mood : ""
+        ].filter(Boolean).join(" ");
+
+        query = [
+            base || searchQuery,
+            modifier,
+            "music"
+        ].filter(Boolean).join(" ");
+    }
+
+    return [
+        query.replace(/\s+/g, " ").trim()
+    ];
+}
 
 
     // =====================================
@@ -3490,7 +3404,7 @@ body .page {
                 new URLSearchParams({
                     part: "snippet",
                     type: "video",
-                    maxResults: "8",
+                    maxResults: "25",
                     q: youtubeQuery,
                     videoEmbeddable: "true",
                     relevanceLanguage: "en",
@@ -3781,10 +3695,10 @@ body .page {
 
 
         const resultCount =
-            weirdness >= 8 ||
-            bogDepth >= 8
-                ? 8
-                : 6;
+    weirdness >= 8 ||
+    bogDepth >= 8
+        ? 10
+        : 8;
 
 
         return {
