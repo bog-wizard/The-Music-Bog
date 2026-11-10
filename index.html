@@ -1899,6 +1899,25 @@ body .page {
         </div>
     </div>
 </section>
+                
+<section
+    style="
+        margin: 20px 0;
+        padding: 18px;
+        border: 1px solid #aaff55;
+        background: rgba(0, 25, 0, 0.7);
+        font-family: monospace;
+    "
+>
+    <h2>🧬 BOG DNA</h2>
+
+    <p id="bogDNAStatus">
+        ANALYZING SWAMP SPECIMENS...
+    </p>
+
+    <p id="bogDNAPreferences"></p>
+</section>
+
                 <section
     id="bogArchive"
     style="
@@ -3885,10 +3904,175 @@ rememberBogVideos(
 };
 
     }
-    // =====================================
+// =====================================
 // THE SPECIMEN JAR
 // Saved YouTube discoveries
 // =====================================
+
+// =====================================
+// VERSION 1.100 — BOG DNA
+// Personalized discovery engine
+// =====================================
+
+const BOG_DNA_STOP_WORDS = new Set([
+    "the", "and", "for", "with", "from",
+    "this", "that", "music", "audio",
+    "official", "video", "album", "full",
+    "track", "song", "live", "rare",
+    "remastered", "recording", "records",
+    "channel", "topic", "feat", "ft"
+]);
+
+function bogDNATokens(text) {
+    return String(text || "")
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .match(/[a-z0-9]{3,}/g)?.filter(
+            word => !BOG_DNA_STOP_WORDS.has(word)
+        ) || [];
+}
+
+function getBogDNAProfile() {
+    const saved = getSavedBogSpecimens();
+    const banished = new Set(
+        getBanishedBogVideos()
+    );
+    const archive = getBogArchive();
+
+    const likes = new Map();
+    const dislikes = new Map();
+
+    function addWords(map, text, weight) {
+        const words = new Set(
+            bogDNATokens(text)
+        );
+
+        for (const word of words) {
+            map.set(
+                word,
+                (map.get(word) || 0) + weight
+            );
+        }
+    }
+
+    for (const item of saved) {
+        addWords(likes, item.title, 2);
+        addWords(likes, item.channel, 3);
+    }
+
+    // A banished video's title/channel can
+    // be learned only if it is in the archive.
+    for (const item of archive) {
+        if (banished.has(item.videoId)) {
+            addWords(dislikes, item.title, 1);
+            addWords(dislikes, item.channel, 2);
+        }
+    }
+
+    return {
+        likes,
+        dislikes,
+        savedCount: saved.length,
+        banishedCount: banished.size
+    };
+}
+
+function scoreBogDNAVideo(item, profile) {
+    const title = item.snippet?.title || "";
+    const channel =
+        item.snippet?.channelTitle || "";
+
+    let score = 0;
+
+    for (const word of new Set(
+        bogDNATokens(title)
+    )) {
+        score += Math.min(
+            profile.likes.get(word) || 0,
+            8
+        );
+
+        score -= Math.min(
+            profile.dislikes.get(word) || 0,
+            5
+        );
+    }
+
+    for (const word of new Set(
+        bogDNATokens(channel)
+    )) {
+        score += Math.min(
+            profile.likes.get(word) || 0,
+            8
+        ) * 1.5;
+
+        score -= Math.min(
+            profile.dislikes.get(word) || 0,
+            5
+        ) * 1.5;
+    }
+
+    return score;
+}
+
+function updateBogDNAStatus() {
+    const status = document.getElementById(
+        "bogDNAStatus"
+    );
+
+    const preferences = document.getElementById(
+        "bogDNAPreferences"
+    );
+
+    if (!status || !preferences) return;
+
+    const profile = getBogDNAProfile();
+
+    if (!profile.savedCount) {
+        status.textContent =
+            "DNA STATUS: UNFORMED";
+
+        preferences.textContent =
+            "SAVE SPECIMENS TO TEACH THE BOG.";
+        return;
+    }
+
+    status.textContent =
+        "DNA STATUS: ACTIVE // " +
+        profile.savedCount +
+        " PRESERVED SPECIMENS";
+
+    const favorites = [...profile.likes.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(entry => entry[0]);
+
+    preferences.textContent =
+        "DETECTED AFFINITIES: " +
+        (favorites.join(" // ") || "UNKNOWN");
+}
+
+function rankBogDNAResults(items) {
+    const profile = getBogDNAProfile();
+
+    if (
+        !profile.savedCount &&
+        !profile.banishedCount
+    ) {
+        return items;
+    }
+
+    return items
+        .map(item => ({
+            item,
+            score:
+                scoreBogDNAVideo(item, profile) +
+                Math.random() * 4
+        }))
+        .sort((a, b) => b.score - a.score)
+        .map(entry => entry.item);
+}
 
 const BOG_SAVED_KEY = "music_bog_saved";
 
@@ -4260,6 +4444,7 @@ function rememberBogVideos(videoIds) {
     }
 }
 
+
 function prioritizeUnheardBogVideos(items) {
     const seen = new Set(getBogHistory());
 
@@ -4272,10 +4457,11 @@ function prioritizeUnheardBogVideos(items) {
     );
 
     return [
-        ...shuffleBogArray(unseen),
-        ...shuffleBogArray(familiar)
+        ...rankBogDNAResults(unseen),
+        ...rankBogDNAResults(familiar)
     ];
 }
+
 
     // =====================================
     // ENTER THE BOG
@@ -5466,7 +5652,9 @@ if (
 
 
         setupSwampPlayers();
+        updateBogDNAStatus();
         updateBogControlPanel();
+        updateBogDNAStatus();
     }
 
 
