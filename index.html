@@ -1504,6 +1504,160 @@ body .page {
     letter-spacing: 2px;
     color: #92a883;
 }
+        
+/* =====================================
+   THE GREAT BOG AWAKENING — V1.100
+===================================== */
+
+.bog-awakening-panel {
+    margin: 28px 0;
+    padding: 24px;
+    border: 1px solid #aaff55;
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(50, 100, 25, .22),
+            transparent 65%
+        ),
+        rgba(0, 16, 0, .9);
+    box-shadow:
+        inset 0 0 25px rgba(0, 255, 50, .07),
+        0 0 18px rgba(100, 255, 50, .12);
+    font-family: monospace;
+}
+
+.bog-awakening-panel h2 {
+    color: #baff77;
+    letter-spacing: 2px;
+}
+
+#bogLivingMessage {
+    color: #aaff55;
+    min-height: 3em;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(170,255,85,.5);
+}
+
+#bogDeepDredgeButton {
+    padding: 13px 18px;
+    background: #102010;
+    color: #aaff55;
+    border: 2px solid #aaff55;
+    font-family: monospace;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+#bogDeepDredgeButton[aria-pressed="true"] {
+    color: #061006;
+    background: #aaff55;
+    box-shadow: 0 0 20px rgba(170,255,85,.5);
+}
+
+.bog-small-print {
+    font-size: 11px;
+    opacity: .7;
+}
+
+.bog-vault-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.bog-vault-controls input,
+.bog-vault-controls select {
+    flex: 1 1 180px;
+    min-width: 0;
+    padding: 10px;
+    background: #061006;
+    color: #aaff55;
+    border: 1px solid #668844;
+    font-family: monospace;
+}
+
+.bog-vault-remove {
+    display: block;
+    margin-top: 12px;
+    padding: 7px 12px;
+    background: transparent;
+    color: #ff5577;
+    border: 1px solid #ff5577;
+    cursor: pointer;
+    font-family: monospace;
+}
+
+.bog-secret-signal {
+    margin-top: 15px;
+    padding: 5px;
+    color: #527344;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: monospace;
+}
+
+.bog-awakening-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 5, 0, .96);
+    color: #baff77;
+    text-align: center;
+    font-family: monospace;
+}
+
+.bog-awakening-inner {
+    max-width: 650px;
+    animation: bogAwaken .8s ease-out;
+}
+
+.bog-awakening-frog {
+    font-size: 80px;
+    filter: drop-shadow(0 0 25px #aaff55);
+}
+
+.bog-awakening-inner h1 {
+    font-size: clamp(24px, 6vw, 48px);
+    text-shadow: 0 0 22px #aaff55;
+}
+
+.bog-awakening-inner button {
+    display: block;
+    margin: 30px auto 0;
+    padding: 12px 18px;
+    background: transparent;
+    color: #aaff55;
+    border: 1px solid #aaff55;
+    cursor: pointer;
+    font-family: monospace;
+}
+
+@keyframes bogAwaken {
+    from {
+        opacity: 0;
+        transform: scale(.8);
+        filter: blur(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bog-awakening-inner {
+        animation: none;
+    }
+}
+
 </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐸</text></svg>">
 </head>
@@ -1840,11 +1994,32 @@ body .page {
         background: rgba(0, 20, 0, 0.5);
     "
 >
-    <h2>🐸 THE SPECIMEN JAR</h2>
+    <h2>📼 THE SPECIMEN VAULT</h2>
 
     <p>
         PRESERVED DISCOVERIES FROM THE DEPTHS.
     </p>
+
+<div class="bog-vault-controls">
+    <input
+        id="bogVaultSearch"
+        type="search"
+        placeholder="SEARCH PRESERVED SPECIMENS..."
+        aria-label="Search saved specimens"
+    >
+
+    <select
+        id="bogVaultSort"
+        aria-label="Sort saved specimens"
+    >
+        <option value="newest">NEWEST FIRST</option>
+        <option value="oldest">OLDEST FIRST</option>
+        <option value="title">TITLE A–Z</option>
+        <option value="channel">CHANNEL A–Z</option>
+    </select>
+</div>
+
+<p id="bogVaultCount">0 SPECIMENS VISIBLE</p>
 
     <div id="savedBogSpecimens">
         <p>THE SPECIMEN JAR IS EMPTY.</p>
@@ -1899,6 +2074,44 @@ body .page {
         </div>
     </div>
 </section>
+       
+<!-- VERSION 1.100: LIVING SWAMP -->
+
+<section class="bog-awakening-panel">
+    <h2>🐸 SWAMP INTELLIGENCE</h2>
+
+    <p>CONSCIOUSNESS STATUS: STIRRING</p>
+
+    <p
+        id="bogLivingMessage"
+        aria-live="polite"
+    >
+        THE WATER IS LISTENING.
+    </p>
+
+    <button
+        id="bogDeepDredgeButton"
+        type="button"
+        aria-pressed="false"
+    >
+        ◎ ACTIVATE DEEP DREDGE
+    </button>
+
+    <p class="bog-small-print">
+        WARNING: UNCHARTED MUSICAL TERRITORY.
+    </p>
+
+    <button
+        id="bogSecretSignal"
+        type="button"
+        class="bog-secret-signal"
+        aria-label="Inspect mysterious swamp signal"
+        title="An unidentified signal"
+    >
+        [ ? ]
+    </button>
+</section>
+         
                 
 <section
     style="
@@ -3353,9 +3566,43 @@ function buildYouTubeQueries({
         ].filter(Boolean).join(" ");
     }
 
-    return [
-        query.replace(/\s+/g, " ").trim()
+    
+// Deep Dredge selects more obscure search
+// terminology without adding API calls.
+if (bogDeepDredge) {
+    const deepTerms = [
+        "private press cassette",
+        "obscure archival music",
+        "outsider home recording",
+        "forgotten experimental album",
+        "underground tape rip",
+        "rare DIY music",
+        "lost independent recording",
+        "avant garde cassette archive"
     ];
+
+    const deepTerm = deepTerms[
+        Math.floor(Math.random() * deepTerms.length)
+    ];
+
+    const base = artistSearch ||
+        [
+            flavor !== "any" ? flavor : "",
+            mood !== "any" ? mood : ""
+        ].filter(Boolean).join(" ") ||
+        searchQuery;
+
+    query = [
+        base,
+        deepTerm,
+        "music"
+    ].filter(Boolean).join(" ");
+}
+
+return [
+    query.replace(/\s+/g, " ").trim()
+];
+
 }
 
 
@@ -3863,10 +4110,14 @@ function buildYouTubeQueries({
 
 
         const resultCount =
-    weirdness >= 8 ||
-    bogDepth >= 8
-        ? 10
-        : 8;
+    bogDeepDredge
+        ? 12
+        : (
+            weirdness >= 8 ||
+            bogDepth >= 8
+                ? 10
+                : 8
+        );
 // =====================================
 // PRIORITIZE NEW DISCOVERIES
 // =====================================
@@ -5652,9 +5903,26 @@ if (
 
 
         setupSwampPlayers();
-        updateBogDNAStatus();
-        updateBogControlPanel();
-        updateBogDNAStatus();
+        // VERSION 1.100 — LIVING SWAMP RESPONSE
+
+if (bogDeepDredge) {
+    setBogVoice(
+        "DEEP DREDGE COMPLETE. THE WATER IS DARKER HERE."
+    );
+} else if (
+    youtubeResults.items &&
+    youtubeResults.items.length > 0
+) {
+    awakenBogVoice();
+} else {
+    setBogVoice(
+        "NOTHING ANSWERED. THE BOG REMAINS PATIENT."
+    );
+}
+
+updateBogControlPanel();
+updateBogDNAStatus();
+
     }
 
 
@@ -6151,6 +6419,257 @@ document.addEventListener("click", function(event) {
         queueMicrotask(updateBogControlPanel);
     }
 });
+    
+/* ==========================================
+   THE MUSIC BOG — VERSION 1.100
+   PHASES 3, 4, AND 5
+========================================== */
+
+// DEEP DREDGE MODE
+
+let bogDeepDredge = false;
+
+function toggleBogDeepDredge() {
+    bogDeepDredge = !bogDeepDredge;
+
+    const button = document.getElementById(
+        "bogDeepDredgeButton"
+    );
+
+    if (button) {
+        button.textContent = bogDeepDredge
+            ? "◉ DEEP DREDGE ACTIVE"
+            : "◎ ACTIVATE DEEP DREDGE";
+
+        button.setAttribute(
+            "aria-pressed",
+            String(bogDeepDredge)
+        );
+    }
+
+    setBogVoice(
+        bogDeepDredge
+            ? "DEPTH LIMITERS DISENGAGED."
+            : "DEPTH LIMITERS RESTORED."
+    );
+}
+
+
+// LIVING SWAMP PERSONALITY
+
+const bogVoices = [
+    "THE WATER IS LISTENING.",
+    "SOMETHING MOVED BELOW THE SURFACE.",
+    "THE BOG APPROVES OF YOUR CURIOSITY.",
+    "NOT EVERYTHING BURIED WANTS TO BE FOUND.",
+    "THE MOSS REMEMBERS.",
+    "YOUR FOOTPRINTS HAVE DISAPPEARED.",
+    "THE SIGNAL IS COMING FROM UNDERGROUND.",
+    "AN UNIDENTIFIED SPECIMEN IS WATCHING."
+];
+
+function setBogVoice(message) {
+    const display = document.getElementById(
+        "bogLivingMessage"
+    );
+
+    if (display) {
+        display.textContent = message;
+    }
+}
+
+function awakenBogVoice() {
+    const message = bogVoices[
+        Math.floor(Math.random() * bogVoices.length)
+    ];
+
+    setBogVoice(message);
+}
+
+
+// SPECIMEN VAULT
+
+function renderBogVault() {
+    const container = document.getElementById(
+        "savedBogSpecimens"
+    );
+
+    if (!container) return;
+
+    const search = (
+        document.getElementById("bogVaultSearch")?.value || ""
+    ).trim().toLowerCase();
+
+    const sort = (
+        document.getElementById("bogVaultSort")?.value ||
+        "newest"
+    );
+
+    let specimens = [...getSavedBogSpecimens()];
+
+    specimens = specimens.filter(item =>
+        String(item.title || "").toLowerCase().includes(search) ||
+        String(item.channel || "").toLowerCase().includes(search)
+    );
+
+    specimens.sort((a, b) => {
+        if (sort === "oldest") {
+            return (a.savedAt || 0) - (b.savedAt || 0);
+        }
+
+        if (sort === "title") {
+            return String(a.title || "").localeCompare(
+                String(b.title || "")
+            );
+        }
+
+        if (sort === "channel") {
+            return String(a.channel || "").localeCompare(
+                String(b.channel || "")
+            );
+        }
+
+        return (b.savedAt || 0) - (a.savedAt || 0);
+    });
+
+    const count = document.getElementById(
+        "bogVaultCount"
+    );
+
+    if (count) {
+        count.textContent =
+            specimens.length + " SPECIMENS VISIBLE";
+    }
+
+    if (!specimens.length) {
+        container.innerHTML =
+            "<p>NO MATCHING SPECIMENS IN THE VAULT.</p>";
+        return;
+    }
+
+    container.innerHTML = specimens.map(item => `
+        <div class="track">
+            <div class="track-info">
+                <div class="track-name">
+                    ${escapeBogHTML(item.title || "Unknown")}
+                </div>
+
+                <div class="artist">
+                    ${escapeBogHTML(item.channel || "Unknown")}
+                </div>
+
+                <div class="album">
+                    PRESERVED SPECIMEN
+                </div>
+
+                <a
+                    href="https://www.youtube.com/watch?v=${encodeURIComponent(item.videoId)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ▶ LISTEN ON YOUTUBE
+                </a>
+
+                <button
+                    type="button"
+                    data-remove-specimen="${escapeBogHTML(item.videoId)}"
+                    class="bog-vault-remove"
+                >
+                    ✕ REMOVE SPECIMEN
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+// Replace the old vault renderer, preserving
+// the existing save/remove event handlers.
+renderSavedBogSpecimens = renderBogVault;
+
+
+// THE SECRET: SEVEN SIGNALS
+
+let bogSecretSignals = 0;
+
+function triggerBogSecret() {
+    bogSecretSignals++;
+
+    if (bogSecretSignals < 7) {
+        setBogVoice(
+            "SIGNAL " + bogSecretSignals + " / 7"
+        );
+        return;
+    }
+
+    bogSecretSignals = 0;
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "bog-awakening-overlay";
+
+    overlay.innerHTML = `
+        <div class="bog-awakening-inner">
+            <div class="bog-awakening-frog">🐸</div>
+            <h1>THE BOG IS AWAKE</h1>
+            <p>YOU WERE NEVER THE ONE SEARCHING.</p>
+            <p>THE BOG WAS SEARCHING FOR YOU.</p>
+            <small>VERSION 1.100 // SIGNAL FOUND</small>
+            <button type="button" id="bogSecretClose">
+                RETURN TO THE SURFACE
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.remove();
+
+    overlay.querySelector(
+        "#bogSecretClose"
+    ).addEventListener("click", close);
+
+    setTimeout(close, 12000);
+}
+
+
+// STARTUP CONNECTIONS
+
+document.getElementById(
+    "bogDeepDredgeButton"
+)?.addEventListener("click", toggleBogDeepDredge);
+
+document.getElementById(
+    "bogVaultSearch"
+)?.addEventListener("input", renderBogVault);
+
+document.getElementById(
+    "bogVaultSort"
+)?.addEventListener("change", renderBogVault);
+
+document.getElementById(
+    "bogSecretSignal"
+)?.addEventListener("click", triggerBogSecret);
+
+renderBogVault();
+awakenBogVoice();
+
+
+// Refresh displays after successful saves,
+// removals, banishments, and archive clearing.
+
+document.addEventListener("click", function(event) {
+    if (event.target.closest(
+        "[data-save-id], [data-remove-specimen], " +
+        "[onclick^='banishBogVideo'], #clearBogArchiveButton"
+    )) {
+        queueMicrotask(() => {
+            updateBogControlPanel();
+            updateBogDNAStatus();
+            renderBogVault();
+        });
+    }
+});
+
     // =====================================
     // STARTUP
     // =====================================
