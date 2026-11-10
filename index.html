@@ -4365,7 +4365,7 @@ function saveBogSpecimen(videoId, title, channel) {
         return;
     }
 
-    renderSavedBogSpecimens();
+    refreshBogVault();
 }
 
 function removeBogSpecimen(videoId) {
@@ -4383,7 +4383,7 @@ function removeBogSpecimen(videoId) {
         return;
     }
 
-    renderSavedBogSpecimens();
+    refreshBogVault();
 }
 
 function renderSavedBogSpecimens() {
@@ -4501,6 +4501,8 @@ function banishBogVideo(videoId, button) {
     }
 
     console.log("🐸 BANISHED FROM THE BOG:", videoId);
+    updateBogControlPanel();
+    updateBogDNAStatus();
 }
     // =====================================
 // VERSION 1.100
@@ -6388,7 +6390,7 @@ document
         );
     });
 
-renderSavedBogSpecimens();
+refreshBogVault();
     // =====================================
 // BOG ARCHIVE STARTUP
 // =====================================
@@ -6584,7 +6586,11 @@ function renderBogVault() {
 
 // Replace the old vault renderer, preserving
 // the existing save/remove event handlers.
-renderSavedBogSpecimens = renderBogVault;
+function refreshBogVault() {
+    renderBogVault();
+    updateBogControlPanel();
+    updateBogDNAStatus();
+}
 
 
 // THE SECRET: SEVEN SIGNALS
