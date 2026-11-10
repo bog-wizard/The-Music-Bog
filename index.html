@@ -6660,22 +6660,6 @@ renderBogVault();
 awakenBogVoice();
 
 
-// Refresh displays after successful saves,
-// removals, banishments, and archive clearing.
-
-document.addEventListener("click", function(event) {
-    if (event.target.closest(
-        "[data-save-id], [data-remove-specimen], " +
-        "[onclick^='banishBogVideo'], #clearBogArchiveButton"
-    )) {
-        queueMicrotask(() => {
-            updateBogControlPanel();
-            updateBogDNAStatus();
-            renderBogVault();
-        });
-    }
-});
-
     // =====================================
     // STARTUP
     // =====================================
