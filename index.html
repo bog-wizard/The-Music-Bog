@@ -1469,7 +1469,41 @@ body .page {
         animation: none;
     }
 }
+/* =====================================
+   VERSION 1.100 — BOG STATISTICS
+===================================== */
 
+.bog-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 10px;
+    border: 1px solid #476b35;
+    background: rgba(0, 35, 0, 0.65);
+    text-align: center;
+    transition: 0.25s ease;
+}
+
+.bog-stat:hover {
+    border-color: #aaff55;
+    box-shadow: 0 0 15px rgba(170,255,85,.25);
+    transform: translateY(-3px);
+}
+
+.bog-stat span {
+    font-size: 30px;
+    font-weight: bold;
+    color: #aaff55;
+    text-shadow: 0 0 10px rgba(170,255,85,.5);
+}
+
+.bog-stat small {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #92a883;
+}
 </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐸</text></svg>">
 </head>
@@ -1814,6 +1848,55 @@ body .page {
 
     <div id="savedBogSpecimens">
         <p>THE SPECIMEN JAR IS EMPTY.</p>
+    </div>
+</section>
+                <!-- ================================= -->
+<!-- VERSION 1.100 BOG CONTROL PANEL -->
+<!-- ================================= -->
+
+<section
+    style="
+        margin: 30px 0;
+        padding: 22px;
+        background: rgba(0, 18, 0, 0.85);
+        border: 2px solid #89ff55;
+        box-shadow: 0 0 18px rgba(80,255,80,.15);
+        font-family: monospace;
+    "
+>
+    <h2>🐸 BOG CONTROL PANEL</h2>
+
+    <p>SWAMP INTELLIGENCE SYSTEM // V1.100</p>
+
+    <div
+        id="bogControlPanel"
+        style="
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(125px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        "
+    >
+        <div class="bog-stat">
+            <span id="bogStatDiscovered">0</span>
+            <small>DISCOVERED</small>
+        </div>
+
+        <div class="bog-stat">
+            <span id="bogStatArchived">0</span>
+            <small>ARCHIVED</small>
+        </div>
+
+        <div class="bog-stat">
+            <span id="bogStatSaved">0</span>
+            <small>PRESERVED</small>
+        </div>
+
+        <div class="bog-stat">
+            <span id="bogStatBanished">0</span>
+            <small>BANISHED</small>
+        </div>
     </div>
 </section>
                 <section
@@ -3985,6 +4068,50 @@ function banishBogVideo(videoId, button) {
     console.log("🐸 BANISHED FROM THE BOG:", videoId);
 }
     // =====================================
+// VERSION 1.100
+// THE BOG CONTROL PANEL
+// =====================================
+
+function getBogStatistics() {
+    const archive = getBogArchive();
+    const saved = getSavedBogSpecimens();
+    const banished = getBanishedBogVideos();
+    const seen = getBogHistory();
+
+    return {
+        discovered: seen.length,
+        archived: archive.length,
+        saved: saved.length,
+        banished: banished.length
+    };
+}
+
+function updateBogControlPanel() {
+    const panel = document.getElementById(
+        "bogControlPanel"
+    );
+
+    if (!panel) return;
+
+    const stats = getBogStatistics();
+
+    panel.querySelector(
+        "#bogStatDiscovered"
+    ).textContent = stats.discovered;
+
+    panel.querySelector(
+        "#bogStatArchived"
+    ).textContent = stats.archived;
+
+    panel.querySelector(
+        "#bogStatSaved"
+    ).textContent = stats.saved;
+
+    panel.querySelector(
+        "#bogStatBanished"
+    ).textContent = stats.banished;
+}
+    // =====================================
 // THE BOG ARCHIVE
 // =====================================
 
@@ -5339,6 +5466,7 @@ if (
 
 
         setupSwampPlayers();
+        updateBogControlPanel();
     }
 
 
@@ -5818,6 +5946,23 @@ document
     ?.addEventListener("click", clearBogArchive);
 
 renderBogArchive();
+    // =====================================
+// VERSION 1.100 DASHBOARD STARTUP
+// =====================================
+
+updateBogControlPanel();
+
+document.addEventListener("click", function(event) {
+    if (
+        event.target.closest(
+            "[data-save-id], [data-remove-specimen], " +
+            "[data-remove-specimen], [onclick^='banishBogVideo'], " +
+            "#clearBogArchiveButton"
+        )
+    ) {
+        queueMicrotask(updateBogControlPanel);
+    }
+});
     // =====================================
     // STARTUP
     // =====================================
