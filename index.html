@@ -1657,7 +1657,18 @@ body .page {
         animation: none;
     }
 }
+/* BOG VERSION DISPLAY */
 
+.bog-version {
+    text-align: right;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #aaff55;
+    opacity: 0.8;
+    padding: 5px 0 12px;
+    text-shadow: 0 0 8px rgba(170,255,85,.4);
+}
 </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐸</text></svg>">
 </head>
@@ -1666,7 +1677,9 @@ body .page {
 <body class="crt-on">
 
 <div class="page">
-
+<div class="bog-version">
+    VERSION <span id="bogVersion"></span>
+</div>
     <div class="slime-line"></div>
 
     <div class="top-grid">
@@ -6659,7 +6672,15 @@ document.getElementById(
 renderBogVault();
 awakenBogVoice();
 
+// =====================================
+// CURRENT BOG VERSION
+// =====================================
 
+const BOG_VERSION = "1.100";
+
+document.getElementById(
+    "bogVersion"
+).textContent = BOG_VERSION;
     // =====================================
     // STARTUP
     // =====================================
